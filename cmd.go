@@ -31,7 +31,7 @@ func new_cmd() *cobra.Command {
 	cmd.Run = func(cmd *cobra.Command, args []string) {
 		all_texts := ""
 		for _, w := range int_to_run {
-			s := signedMath{BasedWidth: w, ModuleNameFmt: module_name_fmt, PackageName: package_name}
+			s := signedMath{BaseWidth: w, ModuleNameFmt: module_name_fmt, PackageName: package_name}
 			code, err := s.GenText()
 			if err != nil {
 				panic(err)

@@ -1,22 +1,38 @@
-module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlying := .UnderlyingUnsignedType}}{
+module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlying := .UnderlyingUnsignedType }}{
+    // {{ $typename }} defines a signed integer with {{ .BaseWidth }} with {{ $underlying }}.
+    // Negative numbers are represented by two's complements.
     struct {{ $typename }} has store, copy, drop {
         value: {{ $underlying }},
     }
 
     const E_OUT_OF_RANGE: u64 = 1001;
 
-    // BreakPoint
+    // BREAK_POINT is the value of 2^({{ .BaseWidth }}-1), where positive and negative breaks.
+    // It is the minimal value of the negative value -2^({{ .BaseWidth }}-1).
+    // BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: {{ $underlying }} = {{ .BreakPoint }};
-    // Max Postive
+    // Max Postive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: {{ $underlying }} = {{ .MaxPositive }};
+    // Max U is the max value of the unsigned, which is 2^{{ .BaseWidth }} - 1.
+    // MAX_U has all its bits 1.
     const MAX_U: {{ $underlying }} = {{ .MaxUnsigned }};
 
+    // swap_half shifts the value of negative numbers to lower half of the total range,
+    // and non negative numbers to the upper half of the total range - this is essentially
+    // x + BREAK_POINT.
+    fun swap_half(x: {{ $typename }}): {{ $underlying }} {
+        // Flip the sign bit - that's it.
+        x.value^BREAK_POINT
+    }
+
+    // new creates a {{ $typename }}.
     public fun new(absolute_value: {{ $underlying }}, negative: bool): {{ $typename }} {
         assert!((negative && absolute_value <= BREAK_POINT) || (!negative && absolute_value < BREAK_POINT), E_OUT_OF_RANGE);
-        if (!negative || absolute_value == 0) { 
+        if (!negative || absolute_value == 0) {
             {{ $typename }} {
                 value: absolute_value,
-            } 
+            }
         } else {
             {{ $typename }} {
                 value: (MAX_U ^ absolute_value) + 1,
@@ -24,10 +40,12 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         }
     }
 
+    // is_negative checks if x is negative.
     public fun is_negative(x: {{ $typename }}): bool {
         x.value >= BREAK_POINT
     }
 
+    // negative returns -x.
     public fun negative(x: {{ $typename }}): {{ $typename }} {
         assert!(x.value != BREAK_POINT, E_OUT_OF_RANGE);
 
@@ -40,6 +58,7 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         }
     }
 
+    // abs returns the absolute value of x (as the unsigned underlying {{$underlying}})
     public fun abs(x: {{ $typename }}): {{ $underlying }} {
         if (!is_negative(x)) {
             x.value
@@ -48,77 +67,57 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         }
     }
 
+    // zero obtains the zero value of the type.
     public fun zero(): {{ $typename }} {
         {{ $typename }} {
             value: 0
         }
     }
 
+    // equal checks if x == y
     public fun equal(x: {{ $typename }}, y: {{ $typename }}): bool {
         x.value == y.value
     }
 
+    // greater checks if x > y
     public fun greater(x: {{ $typename }}, y:{{ $typename }}): bool {
-        if (is_negative(x)) {
-            (x.value > y.value) && (is_negative(y))
-        } else {
-            (is_negative(y)) || x.value > y.value
-        }
+        swap_half(x) > swap_half(y)
     }
 
+    // less checks if x < y
     public fun less(x: {{ $typename }}, y: {{ $typename }}): bool {
-        if (is_negative(x)) {
-            (x.value < y.value) || (!is_negative(y))
-        } else {
-            !is_negative(y) && y.value > x.value
-        }
+        swap_half(x) < swap_half(y)
     }
 
+	// add x and y, abort if overflow
     public fun add(x: {{ $typename }}, y: {{ $typename }}): {{ $typename }} {
-        if (is_negative(x) && is_negative(y)) {
-            let x_abs = abs(x);
-            let y_abs = abs(y);
-            let r_abs = x_abs + y_abs;
-            assert!(r_abs <= BREAK_POINT, E_OUT_OF_RANGE);
-            {{ $typename }} {
-                value: (r_abs^MAX_U) + 1,
-            }
-        } else if (!is_negative(x) && !is_negative(y)) {
-            let r_abs = x.value + y.value;
-            assert!(r_abs < BREAK_POINT, E_OUT_OF_RANGE);
-            {{ $typename }} {
-                value: r_abs,
-            }
-        } else if (is_negative(x)) {
-            let x_abs = abs(x);
-            if (x_abs > y.value) {
-                {{ $typename }} {
-                    value: x.value + y.value,
-                }
-            } else {
-                {{ $typename }} {
-                    value: y.value - x_abs,
-                }
-            }
-        } else {
-            let y_abs = abs(y);
-            if (y_abs > x.value) {
-                {{ $typename }} {
-                    value: x.value + y.value,
-                }
-            } else {
-                {{ $typename }} {
-                    value: x.value - y_abs,
-                }
-            }
+        // get the lower bits of x, and y, and the sign bits.
+        let xl = x.value & MAX_POSITIVE;
+        let xs = x.value & BREAK_POINT;
+        let yl = y.value & MAX_POSITIVE;
+        let ys = y.value & BREAK_POINT;
+        // add the lower bits up, and if x and have don't have the same sign, flip the sign bit.
+        let r = (xl + yl) ^ (xs ^ ys);
+        // get the sign bit of the result
+        let rs = r & BREAK_POINT;
+        // make sure:
+        // - x and y's sign bits are different (never overflow)
+        // - or r's sign bits are same as x and y's sign bits (in this case, the result may overflow).
+        assert!((xs != ys)||(xs == rs), E_OUT_OF_RANGE);
+		// return the result
+        {{ $typename }} {
+            value: r,
         }
     }
 
+    // subtract y from x, abort if overflows
     public fun subtract(x: {{ $typename }}, y: {{ $typename }}): {{ $typename }} {
         // y is the smallest value of negative
         // x must be at most -1
         if (y.value == BREAK_POINT) {
-            assert!(x.value >= BREAK_POINT + 1, E_OUT_OF_RANGE);
+            // technically speaking, should check overflow
+            // however, the minus will abort with underflow
+            // assert!(x.value >= BREAK_POINT, E_OUT_OF_RANGE);
             {{ $typename }} {
                 value: x.value - y.value,
             }
@@ -127,6 +126,7 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         }
     }
 
+    // multiply x and y, abort if overflows
     public fun multiply(x: {{ $typename }}, y: {{ $typename }}): {{ $typename }} {
         let xv = abs(x);
         let yv = abs(y);
@@ -138,6 +138,7 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         }
     }
 
+    // divide x with y, abort if y is 0
     public fun divide(x: {{ $typename }}, y: {{ $typename }}): {{ $typename }} {
         let xv = abs(x);
         let yv = abs(y);
@@ -149,12 +150,13 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         }
     }
 
+    // mod remainder of the integer division (x - y*(x/y))
     public fun mod(x: {{ $typename }}, y: {{ $typename }}): {{ $typename }} {
         subtract(x, multiply(y, divide(x, y)))
     }
 
     #[test]
-    fun test_int{{ .BasedWidth }}() {
+    fun test_int{{ .BaseWidth }}() {
         assert!(abs(zero()) == 0, E_OUT_OF_RANGE);
         assert!(abs(new(5, false)) == 5, E_OUT_OF_RANGE);
         assert!(abs(new(5, true)) == 5, E_OUT_OF_RANGE);
@@ -180,27 +182,27 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
     }
 
     #[test,expected_failure]
-    fun test_int{{ .BasedWidth }}_failures() {
+    fun test_int{{ .BaseWidth }}_failures() {
         abs(new(BREAK_POINT, false));
     }
 
     #[test,expected_failure]
-    fun test_int{{ .BasedWidth }}_failure_overflow() {
+    fun test_int{{ .BaseWidth }}_failure_overflow() {
         add(new(BREAK_POINT, true), new(25, true));
     }
 
     #[test,expected_failure]
-    fun test_int{{ .BasedWidth }}_failure_overflow_positive() {
+    fun test_int{{ .BaseWidth }}_failure_overflow_positive() {
         add(new(MAX_POSITIVE, false), new(3, false));
     }
-    
+
     #[test,expected_failure]
-    fun test_int{{ .BasedWidth }}_failure_overflow_multiply() {
+    fun test_int{{ .BaseWidth }}_failure_overflow_multiply() {
         multiply(new(MAX_POSITIVE, true), new(31,false));
     }
 
     #[test,expected_failure]
-    fun test_int{{ .BasedWidth }}_failure_overflow_multiply_1() {
+    fun test_int{{ .BaseWidth }}_failure_overflow_multiply_1() {
         multiply(new(BREAK_POINT, true), new(1,true));
     }
 }
