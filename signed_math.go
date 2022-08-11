@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-//go:embed signed_math.move
+//go:embed signed_math.move.template
 var signed_math_template string
 
 var one *big.Int = big.NewInt(1)
