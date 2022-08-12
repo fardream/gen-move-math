@@ -1,0 +1,10 @@
+[package]
+name = "example"
+version = "0.0.0"
+
+[dependencies]
+MoveStdlib = { git = "git@github.com:move-language/move.git", rev = "main", subdir = "language/move-stdlib" }
+
+[addresses]
+std = "0x1"
+example = "0x0"

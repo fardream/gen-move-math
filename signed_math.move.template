@@ -1,5 +1,8 @@
-module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlying := .UnderlyingUnsignedType }}{
-    // {{ $typename }} defines a signed integer with {{ .BaseWidth }} with {{ $underlying }}.
+// Auto generated from gen-move-math
+// https://github.com/fardream/gen-move-math
+// Manual edit with caution.
+module {{ .Address }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlying := .UnderlyingUnsignedType }}{
+    // {{ $typename }} defines a signed integer with {{ .BaseWidth }} bit width from {{ $underlying }}.
     // Negative numbers are represented by two's complements.
     struct {{ $typename }} has store, copy, drop {
         value: {{ $underlying }},
@@ -89,7 +92,7 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         swap_half(x) < swap_half(y)
     }
 
-	// add x and y, abort if overflow
+    // add x and y, abort if overflow
     public fun add(x: {{ $typename }}, y: {{ $typename }}): {{ $typename }} {
         // get the lower bits of x, and y, and the sign bits.
         let xl = x.value & MAX_POSITIVE;
@@ -104,7 +107,7 @@ module {{ .PackageName }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$under
         // - x and y's sign bits are different (never overflow)
         // - or r's sign bits are same as x and y's sign bits (in this case, the result may overflow).
         assert!((xs != ys)||(xs == rs), E_OUT_OF_RANGE);
-		// return the result
+        // return the result
         {{ $typename }} {
             value: r,
         }

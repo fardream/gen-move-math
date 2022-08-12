@@ -16,7 +16,7 @@ var one *big.Int = big.NewInt(1)
 type signedMath struct {
 	BaseWidth     uint
 	ModuleNameFmt string
-	PackageName   string
+	Address       string
 }
 
 func (s *signedMath) BaseTypeName() string {
