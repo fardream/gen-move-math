@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	_ "embed"
 	"fmt"
 	"math/big"
-	"text/template"
 )
 
 //go:embed signed_math.move.template
@@ -62,15 +60,5 @@ func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
 }
 
 func (s signedMathGenerated) GenText() (string, error) {
-	tmpl, err := template.New(fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth)).Parse(signed_math_template)
-	if err != nil {
-		return "", err
-	}
-	var buf bytes.Buffer
-	err = tmpl.Execute(&buf, &s)
-	if err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return GenText(fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth), signed_math_template, s)
 }
