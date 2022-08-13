@@ -3,40 +3,67 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
-type int_width []uint
+type int_width struct {
+	permitted   []uint
+	not_default bool
+	values      []uint
+}
 
-var intWidthNotSet bool = true
+func newIntWidth(permitted []uint) *int_width {
+	r := &int_width{}
 
-func (i *int_width) Set(s string) error {
-	if intWidthNotSet {
-		*i = int_width([]uint{})
-		intWidthNotSet = false
+	r.permitted = append(r.permitted, permitted...)
+	r.values = append(r.values, permitted...)
+
+	return r
+}
+
+func sliceToString(s []uint) string {
+	var t []string
+	for _, v := range s {
+		t = append(t, strconv.Itoa(int(v)))
 	}
 
-	parsed, err := strconv.Atoi(s)
+	return strings.Join(t, ", ")
+}
+
+func (i *int_width) Set(s string) error {
+	if !i.not_default {
+		i.values = nil
+		i.not_default = true
+	}
+
+	parsed_signed, err := strconv.Atoi(s)
 	if err != nil {
 		return err
 	}
-	if parsed != 128 && parsed != 64 && parsed != 8 {
-		return fmt.Errorf("%d is not supported (only 8, 64, 128)", parsed)
+
+	parsed := uint(parsed_signed)
+
+	if !slices.Contains(i.permitted, parsed) {
+		return fmt.Errorf("%d is not supported (only %s)", parsed, sliceToString(i.permitted))
 	}
-	for _, already := range *i {
-		if int(already) == parsed {
+
+	for _, v := range i.values {
+		if v == parsed {
 			return fmt.Errorf("%d is already specified", parsed)
 		}
 	}
 
-	*i = append(*i, uint(parsed))
+	i.values = append(i.values, uint(parsed))
 
 	return nil
 }
 
 func (i int_width) String() string {
-	return fmt.Sprintf("%v", ([]uint)(i))
+	return fmt.Sprintf("%v", sliceToString(i.values))
 }
 
 func (i int_width) Type() string {
-	return "list of uint widths, must be 128, 64, or 8"
+	return fmt.Sprintf("list of uint widths, must be %s", sliceToString(i.permitted))
 }

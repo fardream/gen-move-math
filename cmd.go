@@ -22,7 +22,7 @@ gen-move-math will generate code for
 Planned: decimal, more unsigned integers (u16, u32, u256), and possibly more.
 `
 
-func new_cmd() *cobra.Command {
+func new_signed_math_cmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gen-move-math",
 		Short: "generate missing math functions before official move-lang support matures.",
@@ -33,19 +33,19 @@ func new_cmd() *cobra.Command {
 	output := "./sources/signed_math.move"
 	module_name_fmt := "int%d"
 	address := "more_math"
-	int_to_run := int_width([]uint{8, 64, 128})
+	int_to_run := newIntWidth([]uint{8, 64, 128})
 
 	cmd.Flags().StringVarP(&module_name_fmt, "module", "m", module_name_fmt, "module name string for signed integers")
 	cmd.Flags().StringVarP(&output, "out", "o", output, "output file. this should be the in the sources folder of your move package module")
 	cmd.MarkFlagFilename("out")
 	cmd.Flags().StringVarP(&address, "address", "p", address, "(named) address")
-	cmd.Flags().VarP(&int_to_run, "width", "w", "int widths, must be one of 8, 64, 128. can be specified multiple times.")
+	cmd.Flags().VarP(int_to_run, "width", "w", "int widths, must be one of 8, 64, 128. can be specified multiple times.")
 
 	cmd.Run = func(cmd *cobra.Command, args []string) {
 		all_texts := []string{}
-		for _, w := range int_to_run {
+		for _, w := range int_to_run.values {
 			s := signedMath{BaseWidth: w, ModuleNameFmt: module_name_fmt, Address: address}
-			code, err := s.GenText()
+			code, err := newSignedMathGenerated(&s).GenText()
 			if err != nil {
 				panic(err)
 			}
@@ -59,5 +59,7 @@ func new_cmd() *cobra.Command {
 }
 
 func main() {
-	new_cmd().Execute()
+	root_cmd := new_signed_math_cmd()
+
+	root_cmd.Execute()
 }

@@ -19,43 +19,49 @@ type signedMath struct {
 	Address       string
 }
 
-func (s *signedMath) BaseTypeName() string {
-	return fmt.Sprintf("u%d", s.BaseWidth)
+type signedMathGenerated struct {
+	signedMath
+
+	BaseTypeName           string
+	BreakPoint             string
+	MaxUnsigned            string
+	MaxPositive            string
+	ModuleName             string
+	TypeName               string
+	UnderlyingUnsignedType string
 }
 
-func (s *signedMath) BreakPoint() string {
-	bp := big.NewInt(0)
-	bp.Lsh(one, s.BaseWidth-1)
-	return bp.String()
+func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
+	r := &signedMathGenerated{
+		signedMath: *s,
+	}
+
+	r.BaseTypeName = fmt.Sprintf("u%d", s.BaseWidth)
+
+	break_point := big.NewInt(0)
+	break_point.Lsh(one, s.BaseWidth-1)
+	r.BreakPoint = break_point.String()
+
+	max_unsigned := big.NewInt(0)
+	max_unsigned.Lsh(one, s.BaseWidth)
+	max_unsigned.Sub(max_unsigned, one)
+	r.MaxUnsigned = max_unsigned.String()
+
+	max_positive := big.NewInt(0)
+	max_positive.Lsh(one, s.BaseWidth-1)
+	max_positive.Sub(max_positive, one)
+	r.MaxPositive = max_positive.String()
+
+	r.ModuleName = fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth)
+
+	r.TypeName = fmt.Sprintf("Int%d", s.BaseWidth)
+
+	r.UnderlyingUnsignedType = fmt.Sprintf("u%d", s.BaseWidth)
+
+	return r
 }
 
-func (s *signedMath) MaxUnsigned() string {
-	m := big.NewInt(0)
-	m.Lsh(one, s.BaseWidth)
-	m.Sub(m, one)
-	return m.String()
-}
-
-func (s *signedMath) MaxPositive() string {
-	bp := big.NewInt(0)
-	bp.Lsh(one, s.BaseWidth-1)
-	bp.Sub(bp, one)
-	return bp.String()
-}
-
-func (s *signedMath) ModuleName() string {
-	return fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth)
-}
-
-func (s *signedMath) TypeName() string {
-	return fmt.Sprintf("Int%d", s.BaseWidth)
-}
-
-func (s *signedMath) UnderlyingUnsignedType() string {
-	return fmt.Sprintf("u%d", s.BaseWidth)
-}
-
-func (s signedMath) GenText() (string, error) {
+func (s signedMathGenerated) GenText() (string, error) {
 	tmpl, err := template.New(fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth)).Parse(signed_math_template)
 	if err != nil {
 		return "", err
