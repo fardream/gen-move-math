@@ -34,17 +34,25 @@ func newSignedMathCmd() *cobra.Command {
 	moduleNameFmt := "int%d"
 	address := "more_math"
 	widths := newIntWidth([]uint{8, 64, 128})
+	doTest := false
 
 	cmd.Flags().StringVarP(&moduleNameFmt, "module", "m", moduleNameFmt, "module name string for signed integers")
 	cmd.Flags().StringVarP(&output, "out", "o", output, "output file. this should be the in the sources folder of your move package module")
 	cmd.MarkFlagFilename("out")
 	cmd.Flags().StringVarP(&address, "address", "p", address, "(named) address")
 	cmd.Flags().VarP(widths, "width", "w", fmt.Sprintf("int widths, must be one of %s. can be specified multiple times.", sliceToString(widths.permitted)))
+	cmd.Flags().BoolVarP(&doTest, "do-test", "t", false, "generate test code")
 
 	cmd.Run = func(cmd *cobra.Command, args []string) {
 		allTexts := []string{}
 		for _, w := range widths.values {
-			s := signedMath{BaseWidth: w, ModuleNameFmt: moduleNameFmt, Address: address}
+			s := signedMath{
+				BaseWidth:     w,
+				ModuleNameFmt: moduleNameFmt,
+				Address:       address,
+				DoTest:        doTest,
+			}
+
 			code, err := newSignedMathGenerated(&s).GenText()
 			if err != nil {
 				panic(err)
@@ -68,17 +76,25 @@ func newDoubleWidthUnsigned() *cobra.Command {
 	moduleNameFmt := "uint%d"
 	address := "more_math"
 	widths := newIntWidth([]uint{16, 256})
+	doTest := false
 
 	cmd.Flags().StringVarP(&moduleNameFmt, "module", "m", moduleNameFmt, "module name string for double width unsigned integers")
 	cmd.Flags().StringVarP(&output, "out", "o", output, "output file. this should be the in the sources folder of your move package module")
 	cmd.MarkFlagFilename("out")
 	cmd.Flags().StringVarP(&address, "address", "p", address, "(named) address")
 	cmd.Flags().VarP(widths, "width", "w", fmt.Sprintf("int widths, must be one of %s. can be specified multiple times.", sliceToString(widths.permitted)))
+	cmd.Flags().BoolVarP(&doTest, "do-test", "t", false, "generate test code")
 
 	cmd.Run = func(cmd *cobra.Command, args []string) {
 		allTexts := []string{}
 		for _, w := range widths.values {
-			s := doubleWidthUnsigned{DesiredWidth: w, ModuleNameFmt: moduleNameFmt, Address: address}
+			s := doubleWidthUnsigned{
+				DesiredWidth:  w,
+				ModuleNameFmt: moduleNameFmt,
+				Address:       address,
+				DoTest:        doTest,
+			}
+
 			code, err := newDoubleWidthUnsignedGenerated(&s).GenText()
 			if err != nil {
 				panic(err)

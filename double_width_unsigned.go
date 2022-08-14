@@ -13,6 +13,7 @@ type doubleWidthUnsigned struct {
 	DesiredWidth  uint
 	ModuleNameFmt string
 	Address       string
+	DoTest        bool
 }
 
 type doubleWidthUnsignedGenerate struct {

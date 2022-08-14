@@ -157,7 +157,7 @@ module {{ .Address }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlyin
     public fun mod(x: {{ $typename }}, y: {{ $typename }}): {{ $typename }} {
         subtract(x, multiply(y, divide(x, y)))
     }
-
+{{if .DoTest}}
     #[test]
     fun test_int{{ .BaseWidth }}() {
         assert!(abs(zero()) == 0, E_OUT_OF_RANGE);
@@ -208,4 +208,4 @@ module {{ .Address }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlyin
     fun test_int{{ .BaseWidth }}_failure_overflow_multiply_1() {
         multiply(new(BREAK_POINT, true), new(1,true));
     }
-}
+{{end}}}

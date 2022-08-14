@@ -15,6 +15,7 @@ type signedMath struct {
 	BaseWidth     uint
 	ModuleNameFmt string
 	Address       string
+	DoTest        bool
 }
 
 type signedMathGenerated struct {

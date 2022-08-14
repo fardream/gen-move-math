@@ -230,24 +230,8 @@ module example::uint16 {
         let (_, r) = divide_mod(x, y);
         r
     }
-
-    const E_WRONG_RESULT: u64 = 1001;
-    #[test]
-    fun test_uint16() {
-        let (r, carry) = underlying_add_with_carry(252, 9);
-        assert!(r == 5, E_WRONG_RESULT);
-        assert!(carry == 1, E_WRONG_RESULT);
-        let (r, borrow) = underlying_sub_with_borrow(30, 45);
-        assert!(r == 241, E_WRONG_RESULT);
-        assert!(borrow == 1, E_WRONG_RESULT);
-        let mul_r = multiply(new(0,255), new(0,2));
-        assert!(equal(mul_r, new(1,254)), (mul_r.lo as u64));
-        assert!(equal(lsh(new(6,UNDERLYING_UPPER_ONES),2),new(27,192)), E_WRONG_RESULT);
-        let (div, rm) = divide_mod(new(83, 97),new(1, 200));
-        assert!(equal(div, new(0,46)), (div.hi as u64));
-        assert!(equal(rm, new(1, 113)), (rm.lo as u64));
-    }
 }
+
 module example::uint256 {
     struct Uint256 has store, copy, drop {
         hi: u128,
@@ -479,22 +463,5 @@ module example::uint256 {
     public fun mod(x: Uint256, y: Uint256): Uint256 {
         let (_, r) = divide_mod(x, y);
         r
-    }
-
-    const E_WRONG_RESULT: u64 = 1001;
-    #[test]
-    fun test_uint256() {
-        let (r, carry) = underlying_add_with_carry(252, 9);
-        assert!(r == 5, E_WRONG_RESULT);
-        assert!(carry == 1, E_WRONG_RESULT);
-        let (r, borrow) = underlying_sub_with_borrow(30, 45);
-        assert!(r == 241, E_WRONG_RESULT);
-        assert!(borrow == 1, E_WRONG_RESULT);
-        let mul_r = multiply(new(0,255), new(0,2));
-        assert!(equal(mul_r, new(1,254)), (mul_r.lo as u64));
-        assert!(equal(lsh(new(6,UNDERLYING_UPPER_ONES),2),new(27,192)), E_WRONG_RESULT);
-        let (div, rm) = divide_mod(new(83, 97),new(1, 200));
-        assert!(equal(div, new(0,46)), (div.hi as u64));
-        assert!(equal(rm, new(1, 113)), (rm.lo as u64));
     }
 }
