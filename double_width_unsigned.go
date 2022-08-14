@@ -31,6 +31,7 @@ type doubleWidthUnsignedGenerate struct {
 	UnderlyingUnsignedType string
 	Lower1s                string
 	Upper1s                string
+	MaxShiftSize           uint
 }
 
 func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsignedGenerate {
@@ -72,6 +73,7 @@ func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsigne
 	upper_1s = upper_1s.Lsh(lower_1s, r.HalfWidth)
 	r.Upper1s = upper_1s.String()
 
+	r.MaxShiftSize = r.DesiredWidth - 1
 	return r
 }
 

@@ -4,7 +4,9 @@ module example::uint16 {
         lo: u8,
     }
 
-    const FULL_SIZE: u8 = 16;
+    // MAX_SHIFT is desired width - 1.
+    // It looks like move's shift size must be in u8, which has a max of 255.
+    const MAX_SHIFT: u8 = 15;
     const UNDERLYING_SIZE: u8 = 8;
     const UNDERLYING_HALF_SIZE: u8 = 4;
     const UNDERLYING_HALF_POINT: u8 = 128;
@@ -43,7 +45,7 @@ module example::uint16 {
 
     // add two underlying with carry - will never abort.
     // First return value is the value of the result, the second return value indicate if carry happens.
-    fun underlying_add_with_carry(x: u8, y: u8):(u8, u8) {
+    public fun underlying_add_with_carry(x: u8, y: u8):(u8, u8) {
         let r = UNDERLYING_ONES - x;
         if (r < y) {
             (y - r - 1, 1)
@@ -54,7 +56,7 @@ module example::uint16 {
 
     // subtract y from x with borrow - will never abort.
     // First return value is the value of the result, the second return value indicate if borrow happens.
-    fun underlying_sub_with_borrow(x: u8, y:u8): (u8, u8) {
+    public fun underlying_sub_with_borrow(x: u8, y:u8): (u8, u8) {
         if (x < y) {
             ((UNDERLYING_ONES - y) + 1 + x, 1)
         } else {
@@ -93,7 +95,7 @@ module example::uint16 {
     }
 
     // x * y, first return value is the lower part of the result, second return value is the upper part of the result.
-    fun underlying_mul_with_carry(x: u8, y: u8):(u8, u8) {
+    public fun underlying_mul_with_carry(x: u8, y: u8):(u8, u8) {
         // split x and y into lower part and upper part.
         // xh, xl, yh, yl
         // result is
@@ -122,7 +124,7 @@ module example::uint16 {
 
     // left shift, abort if shift is greater than the size of the int.
     public fun lsh(x: Uint16, y: u8): Uint16 {
-        assert!(y <= FULL_SIZE, E_OVERFLOW);
+        assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
             Uint16 {
                 hi: x.lo << (y - UNDERLYING_SIZE),
@@ -140,7 +142,7 @@ module example::uint16 {
 
     // right shift, abort if shift is greater than the size of the int
     public fun rsh(x: Uint16, y: u8): Uint16 {
-        assert!(y <= FULL_SIZE, E_OVERFLOW);
+        assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
             Uint16 {
                 hi: 0,
@@ -156,7 +158,7 @@ module example::uint16 {
         }
     }
 
-    fun underlying_leading_zeros(x: u8): u8 {
+    public fun underlying_leading_zeros(x: u8): u8 {
         if (x == 0) {
             UNDERLYING_SIZE
         } else {
@@ -179,13 +181,14 @@ module example::uint16 {
         }
     }
 
-    fun add_underlying(x:Uint16, y: u8): Uint16 {
+    public fun add_underlying(x:Uint16, y: u8): Uint16 {
         let (lo, carry) = underlying_add_with_carry(x.lo, y);
         Uint16 {
             lo,
             hi: x.hi + carry,
         }
     }
+
     // divide_mod returns x/y and x%y
     public fun divide_mod(x: Uint16, y: Uint16): (Uint16, Uint16) {
         assert!(y.hi != 0 || y.lo != 0, E_DIVISION_BY_ZERO);
@@ -232,15 +235,18 @@ module example::uint16 {
     }
 }
 
+
 module example::uint256 {
     struct Uint256 has store, copy, drop {
         hi: u128,
         lo: u128,
     }
 
-    const FULL_SIZE: u128 = 256;
-    const UNDERLYING_SIZE: u128 = 128;
-    const UNDERLYING_HALF_SIZE: u128 = 64;
+    // MAX_SHIFT is desired width - 1.
+    // It looks like move's shift size must be in u8, which has a max of 255.
+    const MAX_SHIFT: u8 = 255;
+    const UNDERLYING_SIZE: u8 = 128;
+    const UNDERLYING_HALF_SIZE: u8 = 64;
     const UNDERLYING_HALF_POINT: u128 = 170141183460469231731687303715884105728;
     const UNDERLYING_LOWER_ONES: u128 = 18446744073709551615;
     const UNDERLYING_UPPER_ONES: u128 = 340282366920938463444927863358058659840;
@@ -277,7 +283,7 @@ module example::uint256 {
 
     // add two underlying with carry - will never abort.
     // First return value is the value of the result, the second return value indicate if carry happens.
-    fun underlying_add_with_carry(x: u128, y: u128):(u128, u128) {
+    public fun underlying_add_with_carry(x: u128, y: u128):(u128, u128) {
         let r = UNDERLYING_ONES - x;
         if (r < y) {
             (y - r - 1, 1)
@@ -288,7 +294,7 @@ module example::uint256 {
 
     // subtract y from x with borrow - will never abort.
     // First return value is the value of the result, the second return value indicate if borrow happens.
-    fun underlying_sub_with_borrow(x: u128, y:u128): (u128, u128) {
+    public fun underlying_sub_with_borrow(x: u128, y:u128): (u128, u128) {
         if (x < y) {
             ((UNDERLYING_ONES - y) + 1 + x, 1)
         } else {
@@ -327,7 +333,7 @@ module example::uint256 {
     }
 
     // x * y, first return value is the lower part of the result, second return value is the upper part of the result.
-    fun underlying_mul_with_carry(x: u128, y: u128):(u128, u128) {
+    public fun underlying_mul_with_carry(x: u128, y: u128):(u128, u128) {
         // split x and y into lower part and upper part.
         // xh, xl, yh, yl
         // result is
@@ -355,8 +361,8 @@ module example::uint256 {
     }
 
     // left shift, abort if shift is greater than the size of the int.
-    public fun lsh(x: Uint256, y: u128): Uint256 {
-        assert!(y <= FULL_SIZE, E_OVERFLOW);
+    public fun lsh(x: Uint256, y: u8): Uint256 {
+        assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
             Uint256 {
                 hi: x.lo << (y - UNDERLYING_SIZE),
@@ -373,8 +379,8 @@ module example::uint256 {
     }
 
     // right shift, abort if shift is greater than the size of the int
-    public fun rsh(x: Uint256, y: u128): Uint256 {
-        assert!(y <= FULL_SIZE, E_OVERFLOW);
+    public fun rsh(x: Uint256, y: u8): Uint256 {
+        assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
             Uint256 {
                 hi: 0,
@@ -390,11 +396,11 @@ module example::uint256 {
         }
     }
 
-    fun underlying_leading_zeros(x: u128): u128 {
+    public fun underlying_leading_zeros(x: u128): u8 {
         if (x == 0) {
             UNDERLYING_SIZE
         } else {
-            let n: u128 = 0;
+            let n: u8 = 0;
             let k: u128 = UNDERLYING_HALF_POINT;
             while ((k & x) == 0) {
                 n = n + 1;
@@ -405,7 +411,7 @@ module example::uint256 {
         }
     }
 
-    public fun leading_zeros(x: Uint256): u128 {
+    public fun leading_zeros(x: Uint256): u8 {
         if (x.hi == 0) {
             UNDERLYING_SIZE + underlying_leading_zeros(x.lo)
         } else {
@@ -413,13 +419,14 @@ module example::uint256 {
         }
     }
 
-    fun add_underlying(x:Uint256, y: u128): Uint256 {
+    public fun add_underlying(x:Uint256, y: u128): Uint256 {
         let (lo, carry) = underlying_add_with_carry(x.lo, y);
         Uint256 {
             lo,
             hi: x.hi + carry,
         }
     }
+
     // divide_mod returns x/y and x%y
     public fun divide_mod(x: Uint256, y: Uint256): (Uint256, Uint256) {
         assert!(y.hi != 0 || y.lo != 0, E_DIVISION_BY_ZERO);
@@ -465,3 +472,4 @@ module example::uint256 {
         r
     }
 }
+
