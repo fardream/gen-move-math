@@ -1,5 +1,5 @@
 [package]
-name = "example"
+name = "more_math"
 version = "0.0.0"
 
 [dependencies]
@@ -8,4 +8,4 @@ MoveNursery = { git = "git@github.com:move-language/move.git", rev = "main", sub
 
 [addresses]
 std = "0x1"
-example = "0x0"
+more_math = "0x0"

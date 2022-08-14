@@ -1,4 +1,7 @@
-module example::uint16 {
+// Auto generated from gen-move-math
+// https://github.com/fardream/gen-move-math
+// Manual edit with caution.
+module more_math::uint16 {
     struct Uint16 has store, copy, drop {
         hi: u8,
         lo: u8,
@@ -238,8 +241,10 @@ module example::uint16 {
     }
 }
 
-
-module example::uint256 {
+// Auto generated from gen-move-math
+// https://github.com/fardream/gen-move-math
+// Manual edit with caution.
+module more_math::uint256 {
     struct Uint256 has store, copy, drop {
         hi: u128,
         lo: u128,
@@ -478,4 +483,3 @@ module example::uint256 {
         r
     }
 }
-
