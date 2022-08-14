@@ -107,8 +107,11 @@ module {{.Address}}::{{.ModuleName}} {
         let yl = y & UNDERLYING_LOWER_ONES;
         let xhyl = xh * yl;
         let xlyh = xl * yh;
-        let hi = xh * yh + (xhyl >> UNDERLYING_HALF_SIZE) + (xlyh >> UNDERLYING_HALF_SIZE);
-        let lo = xl * yl + ((xhyl & UNDERLYING_LOWER_ONES) << UNDERLYING_HALF_SIZE) + ((xlyh & UNDERLYING_LOWER_ONES)<< UNDERLYING_HALF_SIZE);
+
+        let (lo, lo_carry_1) = underlying_add_with_carry(xl * yl, (xhyl & UNDERLYING_LOWER_ONES) << UNDERLYING_HALF_SIZE);
+        let (lo, lo_carry_2) = underlying_add_with_carry(lo, (xlyh & UNDERLYING_LOWER_ONES)<< UNDERLYING_HALF_SIZE);
+        let hi = xh * yh + (xhyl >> UNDERLYING_HALF_SIZE) + (xlyh >> UNDERLYING_HALF_SIZE) + lo_carry_1 + lo_carry_2;
+
         (lo, hi)
     }
 

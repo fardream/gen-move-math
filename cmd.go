@@ -18,8 +18,9 @@ only support a subset of math functions that we generally use.
 
 gen-move-math will generate code for
 - signed math
+- u16 and u256
 
-Planned: decimal, more unsigned integers (u16, u32, u256), and possibly more.
+Planned: decimal, and possibly more.
 `
 
 func newSignedMathCmd() *cobra.Command {
