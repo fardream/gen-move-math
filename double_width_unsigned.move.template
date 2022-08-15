@@ -239,6 +239,15 @@ module {{.Address}}::{{.ModuleName}} {
         let (_, r) = divide_mod(x, y);
         r
     }
+
+    public fun hi(x: {{.TypeName}}): {{.UnderlyingUnsignedType}} {
+        x.hi
+    }
+
+    public fun lo(x: {{.TypeName}}): {{.UnderlyingUnsignedType}} {
+        x.lo
+    }
+
 {{if .DoTest}}
 
     const E_WRONG_RESULT: u64 = 1001;

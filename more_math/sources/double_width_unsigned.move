@@ -239,6 +239,15 @@ module more_math::uint16 {
         let (_, r) = divide_mod(x, y);
         r
     }
+
+    public fun hi(x: Uint16): u8 {
+        x.hi
+    }
+
+    public fun lo(x: Uint16): u8 {
+        x.lo
+    }
+
 }
 
 // Auto generated from gen-move-math
@@ -482,4 +491,13 @@ module more_math::uint256 {
         let (_, r) = divide_mod(x, y);
         r
     }
+
+    public fun hi(x: Uint256): u128 {
+        x.hi
+    }
+
+    public fun lo(x: Uint256): u128 {
+        x.lo
+    }
+
 }
