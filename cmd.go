@@ -1,5 +1,13 @@
 // gen-move-math
 // move-lang (https://github.com/move-language/move) is a growing language mainly aimed at smart contract development for blockchains.
+// This package provides auto-code generation for
+// - signed integer.
+// - double width unsigned integer u256 and u16.
+// - decimal.
+//
+// For each type of actions, there is the base data structure (which is provided through command line),
+// such as `signedMath`, and the generated data structure, such as `signedMathGenerated`. After which the struct is
+// fed into a template and results concatenated.
 package main
 
 import (
@@ -77,7 +85,7 @@ func newDoubleWidthUnsignedCmd() *cobra.Command {
 	output := "./sources/double_width_unsigned.move"
 	moduleNameFmt := "uint%d"
 	address := "more_math"
-	widths := newIntWidth([]uint{16, 256})
+	widths := newIntWidth([]uint{16, 128, 256})
 	doTest := false
 
 	cmd.Flags().StringVarP(&moduleNameFmt, "module", "m", moduleNameFmt, "module name string for double width unsigned integers")
@@ -120,7 +128,7 @@ func newDecimalCmd() *cobra.Command {
 	output := "./sources/decimal.move"
 	moduleNameFmt := "decimal%dn%d"
 	address := "more_math"
-	widths := newIntWidth([]uint{128})
+	widths := newIntWidth([]uint{64, 128})
 	doTest := false
 	decimals := newIntWidth([]uint{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18})
 	decimals.values = []uint{5, 6, 7, 8, 9, 10, 18}
@@ -137,6 +145,10 @@ func newDecimalCmd() *cobra.Command {
 		allTexts := []string{}
 		for _, w := range widths.values {
 			for _, decimal := range decimals.values {
+				if w == 64 && decimal >= 10 {
+					continue
+				}
+
 				d := decimalInfo{
 					DoTest:        doTest,
 					BaseWidth:     w,
@@ -160,6 +172,8 @@ func newDecimalCmd() *cobra.Command {
 }
 
 func main() {
+	// signed math method is the root,
+	// since it's the first one developed.
 	rootCmd := newSignedMathCmd()
 
 	rootCmd.AddCommand(newDoubleWidthUnsignedCmd(), newDecimalCmd())

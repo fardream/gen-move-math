@@ -16,7 +16,7 @@ type doubleWidthUnsigned struct {
 	DoTest        bool
 }
 
-type doubleWidthUnsignedGenerate struct {
+type doubleWidthUnsignedGenerated struct {
 	doubleWidthUnsigned
 
 	BaseWidth uint
@@ -33,8 +33,8 @@ type doubleWidthUnsignedGenerate struct {
 	MaxShiftSize uint
 }
 
-func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsignedGenerate {
-	r := &doubleWidthUnsignedGenerate{
+func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsignedGenerated {
+	r := &doubleWidthUnsignedGenerated{
 		doubleWidthUnsigned: *s,
 	}
 
@@ -74,6 +74,6 @@ func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsigne
 	return r
 }
 
-func (s doubleWidthUnsignedGenerate) GenText() (string, error) {
+func (s doubleWidthUnsignedGenerated) GenText() (string, error) {
 	return GenText(s.ModuleName, double_width_unsigned_template, s)
 }

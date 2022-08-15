@@ -14,7 +14,7 @@ module more_math::int8 {
     // It is the minimal value of the negative value -2^(8-1).
     // BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: u8 = 128;
-    // Max Postive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    // Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
     // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: u8 = 127;
     // Max U is the max value of the unsigned, which is 2^8 - 1.
@@ -158,6 +158,30 @@ module more_math::int8 {
         subtract(x, multiply(y, divide(x, y)))
     }
 
+    // raw value
+    public fun raw_value(x: Int8): u8 {
+        x.value
+    }
+
+    public fun bitwise_and(x: Int8, y: Int8): Int8 {
+        Int8 {
+            value: x.value & y.value,
+        }
+    }
+
+    public fun bitwise_or(x: Int8, y: Int8): Int8 {
+        Int8 {
+            value: x.value | y.value,
+        }
+    }
+
+    public fun bitwise_xor(x: Int8, y: Int8): Int8 {
+        Int8 {
+            value: x.value ^ y.value,
+        }
+    }
+
+
     #[test]
     fun test_int8() {
         assert!(abs(zero()) == 0, E_OUT_OF_RANGE);
@@ -226,7 +250,7 @@ module more_math::int64 {
     // It is the minimal value of the negative value -2^(64-1).
     // BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: u64 = 9223372036854775808;
-    // Max Postive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    // Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
     // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: u64 = 9223372036854775807;
     // Max U is the max value of the unsigned, which is 2^64 - 1.
@@ -370,6 +394,30 @@ module more_math::int64 {
         subtract(x, multiply(y, divide(x, y)))
     }
 
+    // raw value
+    public fun raw_value(x: Int64): u64 {
+        x.value
+    }
+
+    public fun bitwise_and(x: Int64, y: Int64): Int64 {
+        Int64 {
+            value: x.value & y.value,
+        }
+    }
+
+    public fun bitwise_or(x: Int64, y: Int64): Int64 {
+        Int64 {
+            value: x.value | y.value,
+        }
+    }
+
+    public fun bitwise_xor(x: Int64, y: Int64): Int64 {
+        Int64 {
+            value: x.value ^ y.value,
+        }
+    }
+
+
     #[test]
     fun test_int64() {
         assert!(abs(zero()) == 0, E_OUT_OF_RANGE);
@@ -438,7 +486,7 @@ module more_math::int128 {
     // It is the minimal value of the negative value -2^(128-1).
     // BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: u128 = 170141183460469231731687303715884105728;
-    // Max Postive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    // Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
     // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: u128 = 170141183460469231731687303715884105727;
     // Max U is the max value of the unsigned, which is 2^128 - 1.
@@ -581,6 +629,30 @@ module more_math::int128 {
     public fun mod(x: Int128, y: Int128): Int128 {
         subtract(x, multiply(y, divide(x, y)))
     }
+
+    // raw value
+    public fun raw_value(x: Int128): u128 {
+        x.value
+    }
+
+    public fun bitwise_and(x: Int128, y: Int128): Int128 {
+        Int128 {
+            value: x.value & y.value,
+        }
+    }
+
+    public fun bitwise_or(x: Int128, y: Int128): Int128 {
+        Int128 {
+            value: x.value | y.value,
+        }
+    }
+
+    public fun bitwise_xor(x: Int128, y: Int128): Int128 {
+        Int128 {
+            value: x.value ^ y.value,
+        }
+    }
+
 
     #[test]
     fun test_int128() {

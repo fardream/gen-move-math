@@ -31,6 +31,7 @@ type decimalGenerated struct {
 	SquaredMultiplier string
 }
 
+// tenTo raise 10 to the power of `d`.
 func tenTo(d uint) *big.Int {
 	ten := big.NewInt(10)
 	r := big.NewInt(1)

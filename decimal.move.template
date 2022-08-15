@@ -94,7 +94,26 @@ module {{.Address}}::{{.ModuleName}} {
 
         (d, subtract(x, multiply(d, y)))
     }
+
+    public fun bitwise_and(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        {{.TypeName}} {
+            value: x.value & y.value,
+        }
+    }
+
+    public fun bitwise_or(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        {{.TypeName}} {
+            value: x.value | y.value,
+        }
+    }
+
+    public fun bitwise_xor(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        {{.TypeName}} {
+            value: x.value ^ y.value,
+        }
+    }
 {{ if .DoTest }}
+
     #[test]
     fun test_decimal{{.BaseWidth}}n{{.Decimal}}() {
         let x = from_integer(1);
