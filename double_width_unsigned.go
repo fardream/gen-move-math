@@ -22,16 +22,15 @@ type doubleWidthUnsignedGenerate struct {
 	BaseWidth uint
 	HalfWidth uint
 
-	BaseTypeName           string
-	BreakPoint             string
-	MaxUnsigned            string
-	MaxPositive            string
-	ModuleName             string
-	TypeName               string
-	UnderlyingUnsignedType string
-	Lower1s                string
-	Upper1s                string
-	MaxShiftSize           uint
+	BaseTypeName string
+	BreakPoint   string
+	MaxUnsigned  string
+	MaxPositive  string
+	ModuleName   string
+	TypeName     string
+	Lower1s      string
+	Upper1s      string
+	MaxShiftSize uint
 }
 
 func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsignedGenerate {
@@ -61,8 +60,6 @@ func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsigne
 	r.ModuleName = fmt.Sprintf(s.ModuleNameFmt, r.DesiredWidth)
 
 	r.TypeName = fmt.Sprintf("Uint%d", r.DesiredWidth)
-
-	r.UnderlyingUnsignedType = fmt.Sprintf("u%d", r.BaseWidth)
 
 	lower_1s := big.NewInt(1)
 	lower_1s = lower_1s.Lsh(lower_1s, r.HalfWidth)

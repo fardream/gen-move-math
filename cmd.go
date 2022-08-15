@@ -67,7 +67,7 @@ func newSignedMathCmd() *cobra.Command {
 	return cmd
 }
 
-func newDoubleWidthUnsigned() *cobra.Command {
+func newDoubleWidthUnsignedCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "double-width",
 		Short: "generate double width unsigned integer (for example, Uint16 based on u8)",
@@ -112,7 +112,7 @@ func newDoubleWidthUnsigned() *cobra.Command {
 func main() {
 	rootCmd := newSignedMathCmd()
 
-	rootCmd.AddCommand(newDoubleWidthUnsigned())
+	rootCmd.AddCommand(newDoubleWidthUnsignedCmd())
 
 	rootCmd.Execute()
 }

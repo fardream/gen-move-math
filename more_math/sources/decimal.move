@@ -1,3 +1,6 @@
+// Auto generated from gen-move-math
+// https://github.com/fardream/gen-move-math
+// Manual edit with caution.
 module more_math::decimal128n9 {
     use more_math::uint256;
 
@@ -9,6 +12,47 @@ module more_math::decimal128n9 {
     }
 
     const MULTIPLIER: u128 = 1000000000;
+    const SQUARED_MULTIPLIER: u128 = 1000000000*1000000000;
+
+    const DECIMAL: u8 = 9;
+    const SQUARED_DECIMAL: u8 = 18;
+
+    fun pow(x: u128, p: u8): u128 {
+        if (p == 0) {
+            1
+        } else {
+            let r: u128 = 1;
+            while (p > 0) {
+                r = r * x;
+            };
+
+            r
+        }
+    }
+
+    // get decimal
+    public fun get_decimal(): u8 {
+        DECIMAL
+    }
+
+    // new creates a new Decimal128N9 equals digits / 10^decimal.
+    // For example, 1.23 = new(123, 2), 1.230 = new(1230, 3).
+    public fun new(digits: u128, decimal: u8): Decimal128N9 {
+        if (decimal > DECIMAL) {
+            Decimal128N9 {
+                value: digits / pow(10u128, decimal - DECIMAL),
+            }
+        } else if (decimal == DECIMAL) {
+            Decimal128N9 {
+                value: digits,
+            }
+        } else {
+            Decimal128N9 {
+                value: digits * pow(10u128, DECIMAL - decimal),
+            }
+        }
+    }
+
     public fun from_integer(v: u128) : Decimal128N9 {
         Decimal128N9 {
             value: v * MULTIPLIER,

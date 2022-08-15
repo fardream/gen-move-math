@@ -1,11 +1,11 @@
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
-module {{ .Address }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlying := .UnderlyingUnsignedType }}{
-    // {{ $typename }} defines a signed integer with {{ .BaseWidth }} bit width from {{ $underlying }}.
+module {{ .Address }}::{{ .ModuleName }} {{$typename := .TypeName }}{
+    // {{ $typename }} defines a signed integer with {{ .BaseWidth }} bit width from {{ .BaseTypeName }}.
     // Negative numbers are represented by two's complements.
     struct {{ $typename }} has store, copy, drop {
-        value: {{ $underlying }},
+        value: {{ .BaseTypeName }},
     }
 
     const E_OUT_OF_RANGE: u64 = 1001;
@@ -13,24 +13,24 @@ module {{ .Address }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlyin
     // BREAK_POINT is the value of 2^({{ .BaseWidth }}-1), where positive and negative breaks.
     // It is the minimal value of the negative value -2^({{ .BaseWidth }}-1).
     // BREAK_POINT has the sign bit 1, and all lower bits 0.
-    const BREAK_POINT: {{ $underlying }} = {{ .BreakPoint }};
+    const BREAK_POINT: {{ .BaseTypeName }} = {{ .BreakPoint }};
     // Max Postive, this is BREAK_POINT-1, and the max value for the positive numbers.
     // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
-    const MAX_POSITIVE: {{ $underlying }} = {{ .MaxPositive }};
+    const MAX_POSITIVE: {{ .BaseTypeName }} = {{ .MaxPositive }};
     // Max U is the max value of the unsigned, which is 2^{{ .BaseWidth }} - 1.
     // MAX_U has all its bits 1.
-    const MAX_U: {{ $underlying }} = {{ .MaxUnsigned }};
+    const MAX_U: {{ .BaseTypeName }} = {{ .MaxUnsigned }};
 
     // swap_half shifts the value of negative numbers to lower half of the total range,
     // and non negative numbers to the upper half of the total range - this is essentially
     // x + BREAK_POINT.
-    fun swap_half(x: {{ $typename }}): {{ $underlying }} {
+    fun swap_half(x: {{ $typename }}): {{ .BaseTypeName }} {
         // Flip the sign bit - that's it.
         x.value^BREAK_POINT
     }
 
     // new creates a {{ $typename }}.
-    public fun new(absolute_value: {{ $underlying }}, negative: bool): {{ $typename }} {
+    public fun new(absolute_value: {{ .BaseTypeName }}, negative: bool): {{ $typename }} {
         assert!((negative && absolute_value <= BREAK_POINT) || (!negative && absolute_value < BREAK_POINT), E_OUT_OF_RANGE);
         if (!negative || absolute_value == 0) {
             {{ $typename }} {
@@ -61,8 +61,8 @@ module {{ .Address }}::{{ .ModuleName }} {{$typename := .TypeName }}{{$underlyin
         }
     }
 
-    // abs returns the absolute value of x (as the unsigned underlying {{$underlying}})
-    public fun abs(x: {{ $typename }}): {{ $underlying }} {
+    // abs returns the absolute value of x (as the unsigned underlying {{.BaseTypeName}})
+    public fun abs(x: {{ $typename }}): {{ .BaseTypeName }} {
         if (!is_negative(x)) {
             x.value
         } else {

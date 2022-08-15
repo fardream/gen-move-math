@@ -21,13 +21,12 @@ type signedMath struct {
 type signedMathGenerated struct {
 	signedMath
 
-	BaseTypeName           string
-	BreakPoint             string
-	MaxUnsigned            string
-	MaxPositive            string
-	ModuleName             string
-	TypeName               string
-	UnderlyingUnsignedType string
+	BaseTypeName string
+	BreakPoint   string
+	MaxUnsigned  string
+	MaxPositive  string
+	ModuleName   string
+	TypeName     string
 }
 
 func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
@@ -54,8 +53,6 @@ func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
 	r.ModuleName = fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth)
 
 	r.TypeName = fmt.Sprintf("Int%d", s.BaseWidth)
-
-	r.UnderlyingUnsignedType = fmt.Sprintf("u%d", s.BaseWidth)
 
 	return r
 }
