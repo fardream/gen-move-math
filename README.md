@@ -1,14 +1,32 @@
-# gen-move-math
+# gen-move-math and more_math
 
-A command line to generate missing functionalities for [move](https://github.com/move-language/move).
+`gen-move-math` is a command line to generate missing functionalities for [move](https://github.com/move-language/move), and `more_math` is the code generated with default options.
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/fardream/gen-move-math.svg)](https://pkg.go.dev/github.com/fardream/gen-move-math)
+
+[**Movey Link**](https://www.movey.net/packages/more_math)
+
+Following are currently provided:
 
 - signed integer.
 - double width unsigned integer (u256 and u16).
 - decimal.
 
-## Installation
+## Use as a move package
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/fardream/gen-move-math.svg)](https://pkg.go.dev/github.com/fardream/gen-move-math)
+The generated code with default options is provided in folder [more_math](./more_math), and can be included in any move package by
+
+```
+[dependencies]
+more_math = { git = "https://github.com/fardream/gen-move-math.git", rev = "master", subdir = "more_math"}
+
+[addresses]
+more_math = "0x5" // set this here or in the command line.
+```
+
+## Install/Use Code Generator
+
+Since the code is not published on chain yet, and another way to include the code in your move code is to generate the code from the command line into your own package.
 
 Please install [go](https://go.dev). After installation, simply run the below
 
@@ -22,9 +40,7 @@ Or without downloading
 go run github.com/fardream/gen-move-math@latest
 ```
 
-## Use
-
-This package doesn't provide a move module - it provides a command line utility to generate move code to do that. That is, you can include the generated file inside your own move module. However, the code will be similar to the [example](./example/sources/signed_math.move). See [example](./example) for how to use.
+See [example-use.MD](./example-use.MD) for a detailed instruction.
 
 ## Signed Integer Math
 
@@ -72,16 +88,16 @@ fn mul_with_overflow(x: u128, y: u128) -> (u128, u128) {
 
 ### Division
 
-It's trivia to calculate `x` divided by `y` if `x <= y` (which is either 0 or 1), and the reminder is either `x` or `0`.
+It's trivia to calculate x divided by y if x <= y (which is either 0 or 1), and the reminder is either x or 0.
 
-Now assuming `x` is greater than `y`:
+Now assuming x is greater than y:
 
-1. align `x` and `y`'s leading 1 by shifting `y`.
-1. set reminder to `x`, if reminder is greater than the shifted `y`, subtract it from reminder, and add 1 shifted by the same size to the result.
+1. align x and y leading 1 by left shifting y.
+1. set reminder to x, if reminder is greater than the shifted y, subtract it from reminder, and add 1 shifted by the same size to the result.
 1. left shift the shifted y by 1.
 1. repeat until y is not shifted any more.
 
-```
+```rust
 fn leading_zeros(x: u128) -> u8 {
     if x == 0 {
         return 128;
