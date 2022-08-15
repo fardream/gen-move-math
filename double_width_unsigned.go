@@ -75,5 +75,5 @@ func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsigne
 }
 
 func (s doubleWidthUnsignedGenerate) GenText() (string, error) {
-	return GenText(fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth), double_width_unsigned_template, s)
+	return GenText(s.ModuleName, double_width_unsigned_template, s)
 }

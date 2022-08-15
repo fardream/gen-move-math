@@ -58,5 +58,5 @@ func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
 }
 
 func (s signedMathGenerated) GenText() (string, error) {
-	return GenText(fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth), signed_math_template, s)
+	return GenText(s.ModuleName, signed_math_template, s)
 }

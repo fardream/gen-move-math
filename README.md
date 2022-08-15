@@ -2,7 +2,9 @@
 
 A command line to generate missing functionalities for [move](https://github.com/move-language/move).
 
-Right now only signed integer math is supported. Decimal and u16/u32/u256 are the follow ups.
+- signed integer.
+- double width unsigned integer (u256 and u16).
+- decimal.
 
 ## Installation
 
@@ -122,3 +124,10 @@ fn div_mod(x: u128, y: u128) -> (u128, u128) {
     (result, reminder)
 }
 ```
+
+## Decimal
+
+Fixed decimals are quite straightforward, only two note:
+
+- need to use double size integers to avoid overflow
+- need to multiply the numerator by 10^decimal before performing the division.
