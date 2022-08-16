@@ -31,6 +31,20 @@ type doubleWidthUnsignedGenerated struct {
 	Lower1s      string
 	Upper1s      string
 	MaxShiftSize uint
+
+	UnrolledForLeadingZeros []unrolledUpper
+}
+
+type unrolledUpper struct {
+	Width uint
+	Ones  string
+}
+
+func newUnrolledUpper(n uint, w uint) unrolledUpper {
+	return unrolledUpper{
+		Width: n,
+		Ones:  big.NewInt(0).Lsh(big.NewInt(0).Sub(big.NewInt(0).Lsh(one, n), one), w-n).String(),
+	}
 }
 
 func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsignedGenerated {
@@ -71,6 +85,11 @@ func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsigne
 	r.Upper1s = upper_1s.String()
 
 	r.MaxShiftSize = r.DesiredWidth - 1
+
+	for n := r.BaseWidth >> 1; n > 0; n = n >> 1 {
+		r.UnrolledForLeadingZeros = append(r.UnrolledForLeadingZeros, newUnrolledUpper(n, r.BaseWidth))
+	}
+
 	return r
 }
 

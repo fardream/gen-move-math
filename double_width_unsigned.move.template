@@ -169,12 +169,12 @@ module {{.Address}}::{{.ModuleName}} {
             UNDERLYING_SIZE
         } else {
             let n: u8 = 0;
-            let k: {{.BaseTypeName}} = UNDERLYING_HALF_POINT;
-            while ((k & x) == 0) {
-                n = n + 1;
-                k = k >> 1;
+{{$base_type := .BaseTypeName}}{{range .UnrolledForLeadingZeros}}            if (x & {{.Ones}} == 0) {
+                {{if ne .Width 1}}// x's higher {{.Width}} is all zero, shift the lower part over
+                x = x << {{.Width}};
+                {{end}}n = n + {{.Width}};
             };
-
+{{end}}
             n
         }
     }

@@ -169,10 +169,18 @@ module more_math::uint16 {
             UNDERLYING_SIZE
         } else {
             let n: u8 = 0;
-            let k: u8 = UNDERLYING_HALF_POINT;
-            while ((k & x) == 0) {
+            if (x & 240 == 0) {
+                // x's higher 4 is all zero, shift the lower part over
+                x = x << 4;
+                n = n + 4;
+            };
+            if (x & 192 == 0) {
+                // x's higher 2 is all zero, shift the lower part over
+                x = x << 2;
+                n = n + 2;
+            };
+            if (x & 128 == 0) {
                 n = n + 1;
-                k = k >> 1;
             };
 
             n
@@ -441,10 +449,33 @@ module more_math::uint128 {
             UNDERLYING_SIZE
         } else {
             let n: u8 = 0;
-            let k: u64 = UNDERLYING_HALF_POINT;
-            while ((k & x) == 0) {
+            if (x & 18446744069414584320 == 0) {
+                // x's higher 32 is all zero, shift the lower part over
+                x = x << 32;
+                n = n + 32;
+            };
+            if (x & 18446462598732840960 == 0) {
+                // x's higher 16 is all zero, shift the lower part over
+                x = x << 16;
+                n = n + 16;
+            };
+            if (x & 18374686479671623680 == 0) {
+                // x's higher 8 is all zero, shift the lower part over
+                x = x << 8;
+                n = n + 8;
+            };
+            if (x & 17293822569102704640 == 0) {
+                // x's higher 4 is all zero, shift the lower part over
+                x = x << 4;
+                n = n + 4;
+            };
+            if (x & 13835058055282163712 == 0) {
+                // x's higher 2 is all zero, shift the lower part over
+                x = x << 2;
+                n = n + 2;
+            };
+            if (x & 9223372036854775808 == 0) {
                 n = n + 1;
-                k = k >> 1;
             };
 
             n
@@ -713,10 +744,38 @@ module more_math::uint256 {
             UNDERLYING_SIZE
         } else {
             let n: u8 = 0;
-            let k: u128 = UNDERLYING_HALF_POINT;
-            while ((k & x) == 0) {
+            if (x & 340282366920938463444927863358058659840 == 0) {
+                // x's higher 64 is all zero, shift the lower part over
+                x = x << 64;
+                n = n + 64;
+            };
+            if (x & 340282366841710300949110269838224261120 == 0) {
+                // x's higher 32 is all zero, shift the lower part over
+                x = x << 32;
+                n = n + 32;
+            };
+            if (x & 340277174624079928635746076935438991360 == 0) {
+                // x's higher 16 is all zero, shift the lower part over
+                x = x << 16;
+                n = n + 16;
+            };
+            if (x & 338953138925153547590470800371487866880 == 0) {
+                // x's higher 8 is all zero, shift the lower part over
+                x = x << 8;
+                n = n + 8;
+            };
+            if (x & 319014718988379809496913694467282698240 == 0) {
+                // x's higher 4 is all zero, shift the lower part over
+                x = x << 4;
+                n = n + 4;
+            };
+            if (x & 255211775190703847597530955573826158592 == 0) {
+                // x's higher 2 is all zero, shift the lower part over
+                x = x << 2;
+                n = n + 2;
+            };
+            if (x & 170141183460469231731687303715884105728 == 0) {
                 n = n + 1;
-                k = k >> 1;
             };
 
             n
