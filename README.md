@@ -88,12 +88,12 @@ fn mul_with_overflow(x: u128, y: u128) -> (u128, u128) {
 
 ### Division
 
-It's trivia to calculate x divided by y if x <= y (which is either 0 or 1), and the reminder is either x or 0.
+It's trivia to calculate x divided by y if x <= y (which is either 0 or 1), and the remainder is either x or 0.
 
 Now assuming x is greater than y:
 
 1. align x and y leading 1 by left shifting y.
-1. set reminder to x, if reminder is greater than the shifted y, subtract it from reminder, and add 1 shifted by the same size to the result.
+1. set remainder to x, if remainder is greater than the shifted y, subtract it from remainder, and add 1 shifted by the same size to the result.
 1. left shift the shifted y by 1.
 1. repeat until y is not shifted any more.
 
@@ -122,13 +122,13 @@ fn div_mod(x: u128, y: u128) -> (u128, u128) {
     let mut shift = ny - nx;
 
     let mut current = y << shift;
-    let mut reminder = x;
+    let mut remainder = x;
     let mut result = 0;
 
     loop {
-        if reminder >= current {
+        if remainder >= current {
             result += 1u128 << shift;
-            reminder -= current;
+            remainder -= current;
         }
 
         if shift == 0 {
@@ -137,7 +137,7 @@ fn div_mod(x: u128, y: u128) -> (u128, u128) {
         current = current >> 1;
         shift = shift - 1;
     }
-    (result, reminder)
+    (result, remainder)
 }
 ```
 

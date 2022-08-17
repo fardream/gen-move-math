@@ -220,13 +220,13 @@ module more_math::uint16 {
 
             let shift = n_y - n_x;
             let current = lsh(y, shift);
-            let reminder = copy x;
+            let remainder = copy x;
 
             let result = new(0,0);
 
             loop {
-                if (!less(reminder, current)) {
-                    reminder = subtract(reminder, current);
+                if (!less(remainder, current)) {
+                    remainder = subtract(remainder, current);
                     result = add(result, lsh(new(0,1), shift));
                 };
                 if (shift == 0) { break };
@@ -234,7 +234,7 @@ module more_math::uint16 {
                 shift = shift - 1;
             };
 
-            (result, reminder)
+            (result, remainder)
         }
     }
 
@@ -515,13 +515,13 @@ module more_math::uint128 {
 
             let shift = n_y - n_x;
             let current = lsh(y, shift);
-            let reminder = copy x;
+            let remainder = copy x;
 
             let result = new(0,0);
 
             loop {
-                if (!less(reminder, current)) {
-                    reminder = subtract(reminder, current);
+                if (!less(remainder, current)) {
+                    remainder = subtract(remainder, current);
                     result = add(result, lsh(new(0,1), shift));
                 };
                 if (shift == 0) { break };
@@ -529,7 +529,7 @@ module more_math::uint128 {
                 shift = shift - 1;
             };
 
-            (result, reminder)
+            (result, remainder)
         }
     }
 
@@ -815,13 +815,13 @@ module more_math::uint256 {
 
             let shift = n_y - n_x;
             let current = lsh(y, shift);
-            let reminder = copy x;
+            let remainder = copy x;
 
             let result = new(0,0);
 
             loop {
-                if (!less(reminder, current)) {
-                    reminder = subtract(reminder, current);
+                if (!less(remainder, current)) {
+                    remainder = subtract(remainder, current);
                     result = add(result, lsh(new(0,1), shift));
                 };
                 if (shift == 0) { break };
@@ -829,7 +829,7 @@ module more_math::uint256 {
                 shift = shift - 1;
             };
 
-            (result, reminder)
+            (result, remainder)
         }
     }
 
