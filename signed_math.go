@@ -16,6 +16,8 @@ type signedMath struct {
 	ModuleNameFmt string
 	Address       string
 	DoTest        bool
+	Args          string
+	Version       string
 }
 
 type signedMathGenerated struct {

@@ -1,6 +1,8 @@
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
+// Arguments: {{.Args}}
+// Version: {{.Version}}
 module {{.Address}}::{{.ModuleName}} {
     struct {{.TypeName}} has store, copy, drop {
         hi: {{.BaseTypeName}},

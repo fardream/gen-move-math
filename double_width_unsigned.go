@@ -14,6 +14,8 @@ type doubleWidthUnsigned struct {
 	ModuleNameFmt string
 	Address       string
 	DoTest        bool
+	Args          string
+	Version       string
 }
 
 type doubleWidthUnsignedGenerated struct {

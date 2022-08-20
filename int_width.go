@@ -8,14 +8,14 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type int_width struct {
-	permitted   []uint
-	not_default bool
-	values      []uint
+type intWidth struct {
+	permitted  []uint
+	notDefault bool
+	values     []uint
 }
 
-func newIntWidth(permitted []uint) *int_width {
-	r := &int_width{}
+func newIntWidth(permitted []uint) *intWidth {
+	r := &intWidth{}
 
 	r.permitted = append(r.permitted, permitted...)
 	r.values = append(r.values, permitted...)
@@ -32,10 +32,10 @@ func sliceToString(s []uint) string {
 	return strings.Join(t, ", ")
 }
 
-func (i *int_width) Set(s string) error {
-	if !i.not_default {
+func (i *intWidth) Set(s string) error {
+	if !i.notDefault {
 		i.values = nil
-		i.not_default = true
+		i.notDefault = true
 	}
 
 	parsed_signed, err := strconv.Atoi(s)
@@ -60,10 +60,10 @@ func (i *int_width) Set(s string) error {
 	return nil
 }
 
-func (i int_width) String() string {
+func (i intWidth) String() string {
 	return fmt.Sprintf("%v", sliceToString(i.values))
 }
 
-func (i int_width) Type() string {
+func (i intWidth) Type() string {
 	return fmt.Sprintf("list of uint widths, must be %s", sliceToString(i.permitted))
 }

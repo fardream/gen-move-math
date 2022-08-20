@@ -1,6 +1,8 @@
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
+// Arguments: double-width
+// Version: v1.2.4
 module more_math::uint16 {
     struct Uint16 has store, copy, drop {
         hi: u8,
@@ -281,6 +283,8 @@ module more_math::uint16 {
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
+// Arguments: double-width
+// Version: v1.2.4
 module more_math::uint128 {
     struct Uint128 has store, copy, drop {
         hi: u64,
@@ -576,6 +580,8 @@ module more_math::uint128 {
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
+// Arguments: double-width
+// Version: v1.2.4
 module more_math::uint256 {
     struct Uint256 has store, copy, drop {
         hi: u128,

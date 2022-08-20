@@ -61,6 +61,8 @@ func newSignedMathCmd() *cobra.Command {
 				ModuleNameFmt: moduleNameFmt,
 				Address:       address,
 				DoTest:        doTest,
+				Args:          strings.Join(os.Args[1:], " "),
+				Version:       version,
 			}
 
 			code, err := newSignedMathGenerated(&s).GenText()
@@ -103,6 +105,8 @@ func newDoubleWidthUnsignedCmd() *cobra.Command {
 				ModuleNameFmt: moduleNameFmt,
 				Address:       address,
 				DoTest:        doTest,
+				Args:          strings.Join(os.Args[1:], " "),
+				Version:       version,
 			}
 
 			code, err := newDoubleWidthUnsignedGenerated(&s).GenText()
@@ -155,6 +159,8 @@ func newDecimalCmd() *cobra.Command {
 					ModuleNameFmt: moduleNameFmt,
 					Address:       address,
 					Decimal:       decimal,
+					Args:          strings.Join(os.Args[1:], " "),
+					Version:       version,
 				}
 
 				code, err := newDecimalGenerated(&d).GenText()

@@ -15,6 +15,8 @@ type decimalInfo struct {
 	Address       string
 	DoTest        bool
 	Decimal       uint
+	Args          string
+	Version       string
 }
 
 type decimalGenerated struct {
