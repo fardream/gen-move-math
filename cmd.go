@@ -1,4 +1,5 @@
 // gen-move-math
+//
 // move-lang (https://github.com/move-language/move) is a growing language mainly aimed at smart contract development for blockchains.
 // This package provides auto-code generation for
 // - signed integer.
@@ -11,7 +12,6 @@
 package main
 
 import (
-	_ "embed"
 	"fmt"
 	"os"
 	"strings"
