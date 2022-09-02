@@ -36,6 +36,10 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
+    public fun is_zero(x: &{{.TypeName}}): bool {
+        x.hi == 0 && x.lo == 0
+    }
+
     public fun equal(x: {{.TypeName}}, y: {{.TypeName}}): bool {
         x.hi == y.hi && x.lo == y.lo
     }

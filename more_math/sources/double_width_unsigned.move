@@ -36,6 +36,10 @@ module more_math::uint16 {
         }
     }
 
+    public fun is_zero(x: &Uint16): bool {
+        x.hi == 0 && x.lo == 0
+    }
+
     public fun equal(x: Uint16, y: Uint16): bool {
         x.hi == y.hi && x.lo == y.lo
     }
@@ -316,6 +320,10 @@ module more_math::uint128 {
             hi: 0,
             lo: 0,
         }
+    }
+
+    public fun is_zero(x: &Uint128): bool {
+        x.hi == 0 && x.lo == 0
     }
 
     public fun equal(x: Uint128, y: Uint128): bool {
@@ -613,6 +621,10 @@ module more_math::uint256 {
             hi: 0,
             lo: 0,
         }
+    }
+
+    public fun is_zero(x: &Uint256): bool {
+        x.hi == 0 && x.lo == 0
     }
 
     public fun equal(x: Uint256, y: Uint256): bool {
