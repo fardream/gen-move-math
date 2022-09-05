@@ -54,6 +54,7 @@ module more_math::decimal64n5 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u64) : Decimal64N5 {
         Decimal64N5 {
             value: v * MULTIPLIER,
@@ -91,6 +92,7 @@ module more_math::decimal64n5 {
             value: uint128::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal64N5, y: Decimal64N5):(Decimal64N5, Decimal64N5) {
         let d = divide(x, y);
 
@@ -184,6 +186,7 @@ module more_math::decimal64n6 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u64) : Decimal64N6 {
         Decimal64N6 {
             value: v * MULTIPLIER,
@@ -221,6 +224,7 @@ module more_math::decimal64n6 {
             value: uint128::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal64N6, y: Decimal64N6):(Decimal64N6, Decimal64N6) {
         let d = divide(x, y);
 
@@ -314,6 +318,7 @@ module more_math::decimal64n7 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u64) : Decimal64N7 {
         Decimal64N7 {
             value: v * MULTIPLIER,
@@ -351,6 +356,7 @@ module more_math::decimal64n7 {
             value: uint128::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal64N7, y: Decimal64N7):(Decimal64N7, Decimal64N7) {
         let d = divide(x, y);
 
@@ -444,6 +450,7 @@ module more_math::decimal64n8 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u64) : Decimal64N8 {
         Decimal64N8 {
             value: v * MULTIPLIER,
@@ -481,6 +488,7 @@ module more_math::decimal64n8 {
             value: uint128::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal64N8, y: Decimal64N8):(Decimal64N8, Decimal64N8) {
         let d = divide(x, y);
 
@@ -574,6 +582,7 @@ module more_math::decimal64n9 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u64) : Decimal64N9 {
         Decimal64N9 {
             value: v * MULTIPLIER,
@@ -611,6 +620,7 @@ module more_math::decimal64n9 {
             value: uint128::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal64N9, y: Decimal64N9):(Decimal64N9, Decimal64N9) {
         let d = divide(x, y);
 
@@ -704,6 +714,7 @@ module more_math::decimal128n5 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u128) : Decimal128N5 {
         Decimal128N5 {
             value: v * MULTIPLIER,
@@ -741,6 +752,7 @@ module more_math::decimal128n5 {
             value: uint256::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal128N5, y: Decimal128N5):(Decimal128N5, Decimal128N5) {
         let d = divide(x, y);
 
@@ -834,6 +846,7 @@ module more_math::decimal128n6 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u128) : Decimal128N6 {
         Decimal128N6 {
             value: v * MULTIPLIER,
@@ -871,6 +884,7 @@ module more_math::decimal128n6 {
             value: uint256::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal128N6, y: Decimal128N6):(Decimal128N6, Decimal128N6) {
         let d = divide(x, y);
 
@@ -964,6 +978,7 @@ module more_math::decimal128n7 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u128) : Decimal128N7 {
         Decimal128N7 {
             value: v * MULTIPLIER,
@@ -1001,6 +1016,7 @@ module more_math::decimal128n7 {
             value: uint256::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal128N7, y: Decimal128N7):(Decimal128N7, Decimal128N7) {
         let d = divide(x, y);
 
@@ -1094,6 +1110,7 @@ module more_math::decimal128n8 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u128) : Decimal128N8 {
         Decimal128N8 {
             value: v * MULTIPLIER,
@@ -1131,6 +1148,7 @@ module more_math::decimal128n8 {
             value: uint256::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal128N8, y: Decimal128N8):(Decimal128N8, Decimal128N8) {
         let d = divide(x, y);
 
@@ -1224,6 +1242,7 @@ module more_math::decimal128n9 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u128) : Decimal128N9 {
         Decimal128N9 {
             value: v * MULTIPLIER,
@@ -1261,6 +1280,7 @@ module more_math::decimal128n9 {
             value: uint256::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal128N9, y: Decimal128N9):(Decimal128N9, Decimal128N9) {
         let d = divide(x, y);
 
@@ -1354,6 +1374,7 @@ module more_math::decimal128n10 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u128) : Decimal128N10 {
         Decimal128N10 {
             value: v * MULTIPLIER,
@@ -1391,6 +1412,7 @@ module more_math::decimal128n10 {
             value: uint256::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal128N10, y: Decimal128N10):(Decimal128N10, Decimal128N10) {
         let d = divide(x, y);
 
@@ -1484,6 +1506,7 @@ module more_math::decimal128n18 {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: u128) : Decimal128N18 {
         Decimal128N18 {
             value: v * MULTIPLIER,
@@ -1521,6 +1544,7 @@ module more_math::decimal128n18 {
             value: uint256::lo(d),
         }
     }
+
     public fun divide_mod(x: Decimal128N18, y: Decimal128N18):(Decimal128N18, Decimal128N18) {
         let d = divide(x, y);
 

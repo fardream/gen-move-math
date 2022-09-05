@@ -11,23 +11,29 @@ module {{.Address}}::{{.ModuleName}} {
     const E_INVALID_DECIMAL: u64 = 1001;
     const E_OVERFLOW: u64 = 1002;
 
-
+    // PRECISION is the max decimals in operations.
     const PRECISION: u8 = {{.Precision}};
 
+    // {{.TypeName}}
     struct {{.TypeName}} has store, copy, drop {
         value: {{.SignedIntType}},
         decimal: u8,
     }
 
+    // Get the decimal of this value
     public fun get_decimal(d: &{{.TypeName}}): u8 {
         d.decimal
     }
 
+    // is zero indicates if the value is 0.
     public fun is_zero(d: &{{.TypeName}}): bool {
         {{.SignedIntModule}}::is_zero(d.value)
     }
 
+    // equalize_decimal make x and y to be of same decimal
     public fun equalize_decimal(x: {{.TypeName}}, y: {{.TypeName}}): ({{.TypeName}}, {{.TypeName}}) {
+        let x = reduce(&x);
+        let y = reduce(&y);
         if (x.decimal > y.decimal) {
             y = raise_decimal(&y, x.decimal);
         } else if (x.decimal < y.decimal) {
@@ -36,21 +42,25 @@ module {{.Address}}::{{.ModuleName}} {
         (x, y)
     }
 
+    // equal checks if x equals y
     public fun equal(x: {{.TypeName}}, y: {{.TypeName}}): bool {
         let (x, y) = equalize_decimal(x, y);
         {{.SignedIntModule}}::equal(x.value, y.value)
     }
 
+    // greater: x > y?
     public fun greater(x: {{.TypeName}}, y: {{.TypeName}}): bool {
         let (x, y) = equalize_decimal(x, y);
         {{.SignedIntModule}}::greater(x.value, y.value)
     }
 
+    // less: x < y?
     public fun less(x: {{.TypeName}}, y: {{.TypeName}}): bool {
         let (x, y) = equalize_decimal(x, y);
         {{.SignedIntModule}}::less(x.value, y.value)
     }
 
+    // new creates a new signed decimal.
     public fun new(abs: {{.BaseTypeName}}, negative: bool, decimal: u8): {{.TypeName}} {
         {{.TypeName}} {
             value: {{.SignedIntModule}}::new(abs, negative),
@@ -58,6 +68,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
+    // new_with_value creates a new signed decimal with a signed integer.
     public fun new_with_value(value: {{.SignedIntType}}, decimal: u8): {{.TypeName}} {
         {{.TypeName}} {
             value,
@@ -65,18 +76,23 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
+    // get the underlying signed integer.
     public fun get_value(d: &{{.TypeName}}): {{.SignedIntType}} {
         d.value
     }
 
+    // get the absolute value of the signed integer.
     public fun get_value_abs(d: &{{.TypeName}}): {{.BaseTypeName}} {
         {{.SignedIntModule}}::abs(d.value)
     }
 
+    // check if value is negative
     public fun is_negative(d: &{{.TypeName}}): bool {
         {{.SignedIntModule}}::is_negative(d.value)
     }
 
+    // lower the decimal.
+    // 1st return value is the value with lowered decimal, 2nd return value is the reminder.
     public fun lower_decimal(d: &{{.TypeName}}, decimal: u8): ({{.TypeName}}, {{.TypeName}}) {
         let v = get_value(d);
         let current_decimal = get_decimal(d);
@@ -101,6 +117,7 @@ module {{.Address}}::{{.ModuleName}} {
         )
     }
 
+    // raise decimal
     public fun raise_decimal(d: &{{.TypeName}}, decimal: u8): {{.TypeName}} {
         let v = get_value(d);
         let current_decimal =  get_decimal(d);
@@ -120,7 +137,7 @@ module {{.Address}}::{{.ModuleName}} {
         new_with_value({{.SignedIntModule}}::multiply(v, m), decimal)
     }
 
-    // reduce tries to remove trailing 0s from the value and reduce the decimal.
+    // reduce tries to remove trailing 0s from the value.
     public fun reduce(d: &{{.TypeName}}): {{.TypeName}} {
         if (is_zero(d)) {
             new(0, false, 0)

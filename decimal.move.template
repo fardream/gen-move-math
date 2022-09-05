@@ -54,6 +54,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
+	// from_integer converts an integer to a decimal number.
     public fun from_integer(v: {{.BaseTypeName}}) : {{.TypeName}} {
         {{.TypeName}} {
             value: v * MULTIPLIER,
@@ -91,6 +92,7 @@ module {{.Address}}::{{.ModuleName}} {
             value: {{.DoubleWidthModule}}::lo(d),
         }
     }
+
     public fun divide_mod(x: {{.TypeName}}, y: {{.TypeName}}):({{.TypeName}}, {{.TypeName}}) {
         let d = divide(x, y);
 

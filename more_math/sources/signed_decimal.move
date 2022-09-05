@@ -11,23 +11,29 @@ module more_math::signed_decimal128_p12 {
     const E_INVALID_DECIMAL: u64 = 1001;
     const E_OVERFLOW: u64 = 1002;
 
-
+    // PRECISION is the max decimals in operations.
     const PRECISION: u8 = 12;
 
+    // SDecimal128
     struct SDecimal128 has store, copy, drop {
         value: Int128,
         decimal: u8,
     }
 
+    // Get the decimal of this value
     public fun get_decimal(d: &SDecimal128): u8 {
         d.decimal
     }
 
+    // is zero indicates if the value is 0.
     public fun is_zero(d: &SDecimal128): bool {
         int128::is_zero(d.value)
     }
 
+    // equalize_decimal make x and y to be of same decimal
     public fun equalize_decimal(x: SDecimal128, y: SDecimal128): (SDecimal128, SDecimal128) {
+        let x = reduce(&x);
+        let y = reduce(&y);
         if (x.decimal > y.decimal) {
             y = raise_decimal(&y, x.decimal);
         } else if (x.decimal < y.decimal) {
@@ -36,21 +42,25 @@ module more_math::signed_decimal128_p12 {
         (x, y)
     }
 
+    // equal checks if x equals y
     public fun equal(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::equal(x.value, y.value)
     }
 
+    // greater: x > y?
     public fun greater(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::greater(x.value, y.value)
     }
 
+    // less: x < y?
     public fun less(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::less(x.value, y.value)
     }
 
+    // new creates a new signed decimal.
     public fun new(abs: u128, negative: bool, decimal: u8): SDecimal128 {
         SDecimal128 {
             value: int128::new(abs, negative),
@@ -58,6 +68,7 @@ module more_math::signed_decimal128_p12 {
         }
     }
 
+    // new_with_value creates a new signed decimal with a signed integer.
     public fun new_with_value(value: Int128, decimal: u8): SDecimal128 {
         SDecimal128 {
             value,
@@ -65,18 +76,23 @@ module more_math::signed_decimal128_p12 {
         }
     }
 
+    // get the underlying signed integer.
     public fun get_value(d: &SDecimal128): Int128 {
         d.value
     }
 
+    // get the absolute value of the signed integer.
     public fun get_value_abs(d: &SDecimal128): u128 {
         int128::abs(d.value)
     }
 
+    // check if value is negative
     public fun is_negative(d: &SDecimal128): bool {
         int128::is_negative(d.value)
     }
 
+    // lower the decimal.
+    // 1st return value is the value with lowered decimal, 2nd return value is the reminder.
     public fun lower_decimal(d: &SDecimal128, decimal: u8): (SDecimal128, SDecimal128) {
         let v = get_value(d);
         let current_decimal = get_decimal(d);
@@ -101,6 +117,7 @@ module more_math::signed_decimal128_p12 {
         )
     }
 
+    // raise decimal
     public fun raise_decimal(d: &SDecimal128, decimal: u8): SDecimal128 {
         let v = get_value(d);
         let current_decimal =  get_decimal(d);
@@ -120,7 +137,7 @@ module more_math::signed_decimal128_p12 {
         new_with_value(int128::multiply(v, m), decimal)
     }
 
-    // reduce tries to remove trailing 0s from the value and reduce the decimal.
+    // reduce tries to remove trailing 0s from the value.
     public fun reduce(d: &SDecimal128): SDecimal128 {
         if (is_zero(d)) {
             new(0, false, 0)
@@ -261,23 +278,29 @@ module more_math::signed_decimal128_p14 {
     const E_INVALID_DECIMAL: u64 = 1001;
     const E_OVERFLOW: u64 = 1002;
 
-
+    // PRECISION is the max decimals in operations.
     const PRECISION: u8 = 14;
 
+    // SDecimal128
     struct SDecimal128 has store, copy, drop {
         value: Int128,
         decimal: u8,
     }
 
+    // Get the decimal of this value
     public fun get_decimal(d: &SDecimal128): u8 {
         d.decimal
     }
 
+    // is zero indicates if the value is 0.
     public fun is_zero(d: &SDecimal128): bool {
         int128::is_zero(d.value)
     }
 
+    // equalize_decimal make x and y to be of same decimal
     public fun equalize_decimal(x: SDecimal128, y: SDecimal128): (SDecimal128, SDecimal128) {
+        let x = reduce(&x);
+        let y = reduce(&y);
         if (x.decimal > y.decimal) {
             y = raise_decimal(&y, x.decimal);
         } else if (x.decimal < y.decimal) {
@@ -286,21 +309,25 @@ module more_math::signed_decimal128_p14 {
         (x, y)
     }
 
+    // equal checks if x equals y
     public fun equal(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::equal(x.value, y.value)
     }
 
+    // greater: x > y?
     public fun greater(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::greater(x.value, y.value)
     }
 
+    // less: x < y?
     public fun less(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::less(x.value, y.value)
     }
 
+    // new creates a new signed decimal.
     public fun new(abs: u128, negative: bool, decimal: u8): SDecimal128 {
         SDecimal128 {
             value: int128::new(abs, negative),
@@ -308,6 +335,7 @@ module more_math::signed_decimal128_p14 {
         }
     }
 
+    // new_with_value creates a new signed decimal with a signed integer.
     public fun new_with_value(value: Int128, decimal: u8): SDecimal128 {
         SDecimal128 {
             value,
@@ -315,18 +343,23 @@ module more_math::signed_decimal128_p14 {
         }
     }
 
+    // get the underlying signed integer.
     public fun get_value(d: &SDecimal128): Int128 {
         d.value
     }
 
+    // get the absolute value of the signed integer.
     public fun get_value_abs(d: &SDecimal128): u128 {
         int128::abs(d.value)
     }
 
+    // check if value is negative
     public fun is_negative(d: &SDecimal128): bool {
         int128::is_negative(d.value)
     }
 
+    // lower the decimal.
+    // 1st return value is the value with lowered decimal, 2nd return value is the reminder.
     public fun lower_decimal(d: &SDecimal128, decimal: u8): (SDecimal128, SDecimal128) {
         let v = get_value(d);
         let current_decimal = get_decimal(d);
@@ -351,6 +384,7 @@ module more_math::signed_decimal128_p14 {
         )
     }
 
+    // raise decimal
     public fun raise_decimal(d: &SDecimal128, decimal: u8): SDecimal128 {
         let v = get_value(d);
         let current_decimal =  get_decimal(d);
@@ -370,7 +404,7 @@ module more_math::signed_decimal128_p14 {
         new_with_value(int128::multiply(v, m), decimal)
     }
 
-    // reduce tries to remove trailing 0s from the value and reduce the decimal.
+    // reduce tries to remove trailing 0s from the value.
     public fun reduce(d: &SDecimal128): SDecimal128 {
         if (is_zero(d)) {
             new(0, false, 0)
@@ -511,23 +545,29 @@ module more_math::signed_decimal128_p16 {
     const E_INVALID_DECIMAL: u64 = 1001;
     const E_OVERFLOW: u64 = 1002;
 
-
+    // PRECISION is the max decimals in operations.
     const PRECISION: u8 = 16;
 
+    // SDecimal128
     struct SDecimal128 has store, copy, drop {
         value: Int128,
         decimal: u8,
     }
 
+    // Get the decimal of this value
     public fun get_decimal(d: &SDecimal128): u8 {
         d.decimal
     }
 
+    // is zero indicates if the value is 0.
     public fun is_zero(d: &SDecimal128): bool {
         int128::is_zero(d.value)
     }
 
+    // equalize_decimal make x and y to be of same decimal
     public fun equalize_decimal(x: SDecimal128, y: SDecimal128): (SDecimal128, SDecimal128) {
+        let x = reduce(&x);
+        let y = reduce(&y);
         if (x.decimal > y.decimal) {
             y = raise_decimal(&y, x.decimal);
         } else if (x.decimal < y.decimal) {
@@ -536,21 +576,25 @@ module more_math::signed_decimal128_p16 {
         (x, y)
     }
 
+    // equal checks if x equals y
     public fun equal(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::equal(x.value, y.value)
     }
 
+    // greater: x > y?
     public fun greater(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::greater(x.value, y.value)
     }
 
+    // less: x < y?
     public fun less(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::less(x.value, y.value)
     }
 
+    // new creates a new signed decimal.
     public fun new(abs: u128, negative: bool, decimal: u8): SDecimal128 {
         SDecimal128 {
             value: int128::new(abs, negative),
@@ -558,6 +602,7 @@ module more_math::signed_decimal128_p16 {
         }
     }
 
+    // new_with_value creates a new signed decimal with a signed integer.
     public fun new_with_value(value: Int128, decimal: u8): SDecimal128 {
         SDecimal128 {
             value,
@@ -565,18 +610,23 @@ module more_math::signed_decimal128_p16 {
         }
     }
 
+    // get the underlying signed integer.
     public fun get_value(d: &SDecimal128): Int128 {
         d.value
     }
 
+    // get the absolute value of the signed integer.
     public fun get_value_abs(d: &SDecimal128): u128 {
         int128::abs(d.value)
     }
 
+    // check if value is negative
     public fun is_negative(d: &SDecimal128): bool {
         int128::is_negative(d.value)
     }
 
+    // lower the decimal.
+    // 1st return value is the value with lowered decimal, 2nd return value is the reminder.
     public fun lower_decimal(d: &SDecimal128, decimal: u8): (SDecimal128, SDecimal128) {
         let v = get_value(d);
         let current_decimal = get_decimal(d);
@@ -601,6 +651,7 @@ module more_math::signed_decimal128_p16 {
         )
     }
 
+    // raise decimal
     public fun raise_decimal(d: &SDecimal128, decimal: u8): SDecimal128 {
         let v = get_value(d);
         let current_decimal =  get_decimal(d);
@@ -620,7 +671,7 @@ module more_math::signed_decimal128_p16 {
         new_with_value(int128::multiply(v, m), decimal)
     }
 
-    // reduce tries to remove trailing 0s from the value and reduce the decimal.
+    // reduce tries to remove trailing 0s from the value.
     public fun reduce(d: &SDecimal128): SDecimal128 {
         if (is_zero(d)) {
             new(0, false, 0)
@@ -761,23 +812,29 @@ module more_math::signed_decimal128_p18 {
     const E_INVALID_DECIMAL: u64 = 1001;
     const E_OVERFLOW: u64 = 1002;
 
-
+    // PRECISION is the max decimals in operations.
     const PRECISION: u8 = 18;
 
+    // SDecimal128
     struct SDecimal128 has store, copy, drop {
         value: Int128,
         decimal: u8,
     }
 
+    // Get the decimal of this value
     public fun get_decimal(d: &SDecimal128): u8 {
         d.decimal
     }
 
+    // is zero indicates if the value is 0.
     public fun is_zero(d: &SDecimal128): bool {
         int128::is_zero(d.value)
     }
 
+    // equalize_decimal make x and y to be of same decimal
     public fun equalize_decimal(x: SDecimal128, y: SDecimal128): (SDecimal128, SDecimal128) {
+        let x = reduce(&x);
+        let y = reduce(&y);
         if (x.decimal > y.decimal) {
             y = raise_decimal(&y, x.decimal);
         } else if (x.decimal < y.decimal) {
@@ -786,21 +843,25 @@ module more_math::signed_decimal128_p18 {
         (x, y)
     }
 
+    // equal checks if x equals y
     public fun equal(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::equal(x.value, y.value)
     }
 
+    // greater: x > y?
     public fun greater(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::greater(x.value, y.value)
     }
 
+    // less: x < y?
     public fun less(x: SDecimal128, y: SDecimal128): bool {
         let (x, y) = equalize_decimal(x, y);
         int128::less(x.value, y.value)
     }
 
+    // new creates a new signed decimal.
     public fun new(abs: u128, negative: bool, decimal: u8): SDecimal128 {
         SDecimal128 {
             value: int128::new(abs, negative),
@@ -808,6 +869,7 @@ module more_math::signed_decimal128_p18 {
         }
     }
 
+    // new_with_value creates a new signed decimal with a signed integer.
     public fun new_with_value(value: Int128, decimal: u8): SDecimal128 {
         SDecimal128 {
             value,
@@ -815,18 +877,23 @@ module more_math::signed_decimal128_p18 {
         }
     }
 
+    // get the underlying signed integer.
     public fun get_value(d: &SDecimal128): Int128 {
         d.value
     }
 
+    // get the absolute value of the signed integer.
     public fun get_value_abs(d: &SDecimal128): u128 {
         int128::abs(d.value)
     }
 
+    // check if value is negative
     public fun is_negative(d: &SDecimal128): bool {
         int128::is_negative(d.value)
     }
 
+    // lower the decimal.
+    // 1st return value is the value with lowered decimal, 2nd return value is the reminder.
     public fun lower_decimal(d: &SDecimal128, decimal: u8): (SDecimal128, SDecimal128) {
         let v = get_value(d);
         let current_decimal = get_decimal(d);
@@ -851,6 +918,7 @@ module more_math::signed_decimal128_p18 {
         )
     }
 
+    // raise decimal
     public fun raise_decimal(d: &SDecimal128, decimal: u8): SDecimal128 {
         let v = get_value(d);
         let current_decimal =  get_decimal(d);
@@ -870,7 +938,7 @@ module more_math::signed_decimal128_p18 {
         new_with_value(int128::multiply(v, m), decimal)
     }
 
-    // reduce tries to remove trailing 0s from the value and reduce the decimal.
+    // reduce tries to remove trailing 0s from the value.
     public fun reduce(d: &SDecimal128): SDecimal128 {
         if (is_zero(d)) {
             new(0, false, 0)
