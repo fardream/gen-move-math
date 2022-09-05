@@ -1,6 +1,6 @@
 [package]
 name = "more_math"
-version = "1.2.3"
+version = "1.2.6"
 license = "MIT"
 authors = ["Chao Xu <fardream@users.noreply.github.com>"]
 

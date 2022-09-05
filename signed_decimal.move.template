@@ -1,0 +1,249 @@
+// Auto generated from gen-move-math
+// https://github.com/fardream/gen-move-math
+// Manual edit with caution.
+// Arguments: {{.Args}}
+// Version: {{.Version}}
+module {{.Address}}::{{.ModuleName}} {
+    use {{.Address}}::{{.DoubleWidthModule}};
+    use {{.Address}}::{{.SignedIntModule}}::{Self, {{.SignedIntType}}};
+
+
+    const E_INVALID_DECIMAL: u64 = 1001;
+    const E_OVERFLOW: u64 = 1002;
+
+
+    const PRECISION: u8 = {{.Precision}};
+
+    struct {{.TypeName}} has store, copy, drop {
+        value: {{.SignedIntType}},
+        decimal: u8,
+    }
+
+    public fun get_decimal(d: &{{.TypeName}}): u8 {
+        d.decimal
+    }
+
+    public fun is_zero(d: &{{.TypeName}}): bool {
+        {{.SignedIntModule}}::is_zero(d.value)
+    }
+
+    public fun equalize_decimal(x: {{.TypeName}}, y: {{.TypeName}}): ({{.TypeName}}, {{.TypeName}}) {
+        if (x.decimal > y.decimal) {
+            y = raise_decimal(&y, x.decimal);
+        } else if (x.decimal < y.decimal) {
+            x = raise_decimal(&x, y.decimal);
+        };
+        (x, y)
+    }
+
+    public fun equal(x: {{.TypeName}}, y: {{.TypeName}}): bool {
+        let (x, y) = equalize_decimal(x, y);
+        {{.SignedIntModule}}::equal(x.value, y.value)
+    }
+
+    public fun greater(x: {{.TypeName}}, y: {{.TypeName}}): bool {
+        let (x, y) = equalize_decimal(x, y);
+        {{.SignedIntModule}}::greater(x.value, y.value)
+    }
+
+    public fun less(x: {{.TypeName}}, y: {{.TypeName}}): bool {
+        let (x, y) = equalize_decimal(x, y);
+        {{.SignedIntModule}}::less(x.value, y.value)
+    }
+
+    public fun new(abs: {{.BaseTypeName}}, negative: bool, decimal: u8): {{.TypeName}} {
+        {{.TypeName}} {
+            value: {{.SignedIntModule}}::new(abs, negative),
+            decimal,
+        }
+    }
+
+    public fun new_with_value(value: {{.SignedIntType}}, decimal: u8): {{.TypeName}} {
+        {{.TypeName}} {
+            value,
+            decimal,
+        }
+    }
+
+    public fun get_value(d: &{{.TypeName}}): {{.SignedIntType}} {
+        d.value
+    }
+
+    public fun get_value_abs(d: &{{.TypeName}}): {{.BaseTypeName}} {
+        {{.SignedIntModule}}::abs(d.value)
+    }
+
+    public fun is_negative(d: &{{.TypeName}}): bool {
+        {{.SignedIntModule}}::is_negative(d.value)
+    }
+
+    public fun lower_decimal(d: &{{.TypeName}}, decimal: u8): ({{.TypeName}}, {{.TypeName}}) {
+        let v = get_value(d);
+        let current_decimal = get_decimal(d);
+
+        assert!(
+            current_decimal > decimal,
+            E_INVALID_DECIMAL
+        );
+
+        let m: {{.BaseTypeName}} = 1;
+        let i = current_decimal;
+        while (i > decimal) {
+            m = m * 10;
+            i = i - 1;
+        };
+
+        let m = {{.SignedIntModule}}::new(m, false);
+
+        (
+            new_with_value({{.SignedIntModule}}::divide(v, m), decimal),
+            new_with_value({{.SignedIntModule}}::mod(v, m), current_decimal)
+        )
+    }
+
+    public fun raise_decimal(d: &{{.TypeName}}, decimal: u8): {{.TypeName}} {
+        let v = get_value(d);
+        let current_decimal =  get_decimal(d);
+        assert!(
+            current_decimal < decimal,
+            E_INVALID_DECIMAL
+        );
+
+        let m: {{.BaseTypeName}} = 1;
+        let i = current_decimal;
+        while (i < decimal) {
+            m = m * 10;
+            i = i + 1;
+        };
+
+        let m = {{.SignedIntModule}}::new(m, false);
+        new_with_value({{.SignedIntModule}}::multiply(v, m), decimal)
+    }
+
+    // reduce tries to remove trailing 0s from the value and reduce the decimal.
+    public fun reduce(d: &{{.TypeName}}): {{.TypeName}} {
+        if (is_zero(d)) {
+            new(0, false, 0)
+        } else {
+            let v = get_value_abs(d);
+            let i = get_decimal(d);
+            while (i > 0) {
+                if (v%10 == 0) {
+                    i = i - 1;
+                    v = v/10;
+                } else {
+                    break
+                };
+            };
+
+            new(v, is_negative(d), i)
+        }
+    }
+
+    public fun add(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        let dx = get_decimal(&x);
+        let dy = get_decimal(&y);
+        if (dx > dy) {
+            y = raise_decimal(&y, dx);
+        } else if (dy > dx) {
+            x = raise_decimal(&x, dy);
+            dx = dy;
+        };
+
+        reduce(&new_with_value({{.SignedIntModule}}::add(get_value(&x), get_value(&y)), dx))
+    }
+
+    public fun subtract(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        let dx = get_decimal(&x);
+        let dy = get_decimal(&y);
+        if (dx > dy) {
+            y = raise_decimal(&y, dx);
+        } else if (dy > dx) {
+            x = raise_decimal(&x, dy);
+            dx = dy;
+        };
+
+        reduce(&new_with_value({{.SignedIntModule}}::subtract(get_value(&x), get_value(&y)), dx))
+    }
+
+    public fun multiply(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        let xv = get_value_abs(&x);
+        let yv = get_value_abs(&y);
+        let (lo, hi) = {{.DoubleWidthModule}}::underlying_mul_with_carry(xv, yv);
+        let vabs = {{.DoubleWidthModule}}::new(hi, lo);
+        let d = get_decimal(&x) + get_decimal(&y);
+        let ten= {{.DoubleWidthModule}}::new(0, 10);
+        while (d > 0) {
+            let (k, r) = {{.DoubleWidthModule}}::divide_mod(vabs, ten);
+            if ({{.DoubleWidthModule}}::is_zero(&r)) {
+                vabs = k;
+                d = d - 1;
+            } else {
+                break
+            };
+        };
+
+        assert!(
+            {{.DoubleWidthModule}}::hi(vabs) == 0,
+            E_OVERFLOW
+        );
+
+        let is_negative = is_negative(&x) != is_negative(&y);
+
+        new({{.DoubleWidthModule}}::lo(vabs), is_negative, d)
+    }
+
+    public fun divide(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        let yv_abs = {{.DoubleWidthModule}}::new(0, get_value_abs(&y));
+        let xv_abs = {{.DoubleWidthModule}}::new(0, get_value_abs(&x));
+        let dx = get_decimal(&x);
+        let dy = get_decimal(&y);
+        let ten = {{.DoubleWidthModule}}::new(0, 10);
+        let precision = if (dx > PRECISION) {
+            0
+        } else {
+            PRECISION - dx
+        };
+
+        let ed = 0;
+
+        while (ed < dy || ed < precision) {
+            xv_abs = {{.DoubleWidthModule}}::multiply(xv_abs, ten);
+            ed = ed + 1;
+        };
+
+        let vabs = {{.DoubleWidthModule}}::divide(xv_abs, yv_abs);
+
+        assert!(
+            {{.DoubleWidthModule}}::hi(vabs) == 0,
+            E_OVERFLOW
+        );
+
+        new({{.DoubleWidthModule}}::lo(vabs), is_negative(&x) != is_negative(&y), dx + ed - dy)
+    }
+
+    public fun divide_mod(x: {{.TypeName}}, y: {{.TypeName}}): ({{.TypeName}}, {{.TypeName}}) {
+        let d = divide(x, y);
+        let r = subtract(x, multiply(d, y));
+        (d, r)
+    }
+
+    public fun mod(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
+        let (_, r) = divide_mod(x, y);
+        r
+    }
+{{ if .DoTest }}
+
+    #[test]
+    fun test_decimal{{.BaseWidth}}_p{{.Precision}}() {
+        let c = new(1800, false, 0);
+        let d = new(3600, false, 0);
+        let r = divide(c, d);
+        assert!(equal(r, new(5, false, 1)), (r.decimal as u64));
+
+        let c = new(5, false, 1);
+        let d = new(2, true, 2);
+        let r = multiply(c, d);
+        assert!(equal(r, new(10, true, 3)), (r.decimal as u64))
+    }
+{{end}}}

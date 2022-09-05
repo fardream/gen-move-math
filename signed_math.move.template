@@ -50,6 +50,10 @@ module {{ .Address }}::{{ .ModuleName }} {
         x.value >= BREAK_POINT
     }
 
+    public fun is_zero(x: {{ .TypeName }}): bool {
+        x.value == 0
+    }
+
     // negative returns -x.
     public fun negative(x: {{ .TypeName }}): {{ .TypeName }} {
         assert!(x.value != BREAK_POINT, E_OUT_OF_RANGE);

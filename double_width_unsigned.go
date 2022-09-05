@@ -10,12 +10,11 @@ import (
 var double_width_unsigned_template string
 
 type doubleWidthUnsigned struct {
-	DesiredWidth  uint
-	ModuleNameFmt string
-	Address       string
-	DoTest        bool
-	Args          string
-	Version       string
+	DesiredWidth uint
+	Address      string
+	DoTest       bool
+	Args         string
+	Version      string
 }
 
 type doubleWidthUnsignedGenerated struct {
@@ -49,6 +48,10 @@ func newUnrolledUpper(n uint, w uint) unrolledUpper {
 	}
 }
 
+func getDoubleWidthModuleName(desiredWith uint) string {
+	return fmt.Sprintf("uint%d", desiredWith)
+}
+
 func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsignedGenerated {
 	r := &doubleWidthUnsignedGenerated{
 		doubleWidthUnsigned: *s,
@@ -73,7 +76,7 @@ func newDoubleWidthUnsignedGenerated(s *doubleWidthUnsigned) *doubleWidthUnsigne
 	max_positive.Sub(max_positive, one)
 	r.MaxPositive = max_positive.String()
 
-	r.ModuleName = fmt.Sprintf(s.ModuleNameFmt, r.DesiredWidth)
+	r.ModuleName = getDoubleWidthModuleName(r.DesiredWidth)
 
 	r.TypeName = fmt.Sprintf("Uint%d", r.DesiredWidth)
 

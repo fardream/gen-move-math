@@ -26,7 +26,6 @@ type decimalGenerated struct {
 	ModuleName             string
 	TypeName               string
 	UnderlyingUnsignedType string
-	DoubleWidthType        string
 	DoubleWidthModule      string
 
 	Multiplier        string
@@ -54,8 +53,7 @@ func newDecimalGenerated(s *decimalInfo) *decimalGenerated {
 
 	r.TypeName = fmt.Sprintf("Decimal%dN%d", r.BaseWidth, r.Decimal)
 
-	r.DoubleWidthModule = fmt.Sprintf("uint%d", r.BaseWidth*2)
-	r.DoubleWidthType = fmt.Sprintf("Uint%d", r.BaseWidth*2)
+	r.DoubleWidthModule = getDoubleWidthModuleName(r.BaseWidth * 2)
 
 	r.Multiplier = tenTo(s.Decimal).String()
 	r.SquaredMultiplier = tenTo(s.Decimal * 2).String()

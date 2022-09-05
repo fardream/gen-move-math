@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal64n5 {
     use more_math::uint128;
 
@@ -132,7 +132,7 @@ module more_math::decimal64n5 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal64n6 {
     use more_math::uint128;
 
@@ -262,7 +262,7 @@ module more_math::decimal64n6 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal64n7 {
     use more_math::uint128;
 
@@ -392,7 +392,7 @@ module more_math::decimal64n7 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal64n8 {
     use more_math::uint128;
 
@@ -522,7 +522,7 @@ module more_math::decimal64n8 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal64n9 {
     use more_math::uint128;
 
@@ -652,7 +652,7 @@ module more_math::decimal64n9 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal128n5 {
     use more_math::uint256;
 
@@ -782,7 +782,7 @@ module more_math::decimal128n5 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal128n6 {
     use more_math::uint256;
 
@@ -912,7 +912,7 @@ module more_math::decimal128n6 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal128n7 {
     use more_math::uint256;
 
@@ -1042,7 +1042,7 @@ module more_math::decimal128n7 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal128n8 {
     use more_math::uint256;
 
@@ -1172,7 +1172,7 @@ module more_math::decimal128n8 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal128n9 {
     use more_math::uint256;
 
@@ -1302,7 +1302,7 @@ module more_math::decimal128n9 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal128n10 {
     use more_math::uint256;
 
@@ -1432,7 +1432,7 @@ module more_math::decimal128n10 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: decimal -t
-// Version: v1.2.4
+// Version: v1.2.6
 module more_math::decimal128n18 {
     use more_math::uint256;
 

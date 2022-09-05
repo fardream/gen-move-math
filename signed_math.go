@@ -12,12 +12,11 @@ var signed_math_template string
 var one *big.Int = big.NewInt(1)
 
 type signedMath struct {
-	BaseWidth     uint
-	ModuleNameFmt string
-	Address       string
-	DoTest        bool
-	Args          string
-	Version       string
+	BaseWidth uint
+	Address   string
+	DoTest    bool
+	Args      string
+	Version   string
 }
 
 type signedMathGenerated struct {
@@ -29,6 +28,14 @@ type signedMathGenerated struct {
 	MaxPositive  string
 	ModuleName   string
 	TypeName     string
+}
+
+func getSignedIntModuleName(baseWidth uint) string {
+	return fmt.Sprintf("int%d", baseWidth)
+}
+
+func getSignedIntType(baseWidth uint) string {
+	return fmt.Sprintf("Int%d", baseWidth)
 }
 
 func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
@@ -52,9 +59,9 @@ func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
 	max_positive.Sub(max_positive, one)
 	r.MaxPositive = max_positive.String()
 
-	r.ModuleName = fmt.Sprintf(s.ModuleNameFmt, s.BaseWidth)
+	r.ModuleName = getSignedIntModuleName(s.BaseWidth)
 
-	r.TypeName = fmt.Sprintf("Int%d", s.BaseWidth)
+	r.TypeName = getSignedIntType(s.BaseWidth)
 
 	return r
 }
