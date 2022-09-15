@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: -t
-// Version: v1.2.6
+// Version: v1.2.7
 module more_math::int8 {
     // Int8 defines a signed integer with 8 bit width from u8.
     // Negative numbers are represented by two's complements.
@@ -244,7 +244,7 @@ module more_math::int8 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: -t
-// Version: v1.2.6
+// Version: v1.2.7
 module more_math::int64 {
     // Int64 defines a signed integer with 64 bit width from u64.
     // Negative numbers are represented by two's complements.
@@ -486,7 +486,7 @@ module more_math::int64 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: -t
-// Version: v1.2.6
+// Version: v1.2.7
 module more_math::int128 {
     // Int128 defines a signed integer with 128 bit width from u128.
     // Negative numbers are represented by two's complements.

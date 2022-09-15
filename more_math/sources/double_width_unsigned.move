@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: double-width
-// Version: v1.2.6
+// Version: v1.2.7
 module more_math::uint16 {
     struct Uint16 has store, copy, drop {
         hi: u8,
@@ -124,13 +124,27 @@ module more_math::uint16 {
         (lo, hi)
     }
 
+    public fun underlying_mul_to_uint16(x: u8, y: u8): Uint16{
+        let (lo, hi) = underlying_mul_with_carry(x, y);
+        new(hi, lo)
+    }
+
     // x * y, abort if overflow
     public fun multiply(x: Uint16, y: Uint16): Uint16 {
-        assert!(x.hi * y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
+        assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y.lo);
         Uint16 {
             lo: xlyl,
             hi: x.lo * y.hi + x.hi * y.lo + xlyl_carry,
+        }
+    }
+
+    // x * y where y is u8
+    public fun multiply_underlying(x: Uint16, y: u8): Uint16 {
+        let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
+        Uint16 {
+            lo: xlyl,
+            hi: x.hi * y + xlyl_carry,
         }
     }
 
@@ -244,14 +258,28 @@ module more_math::uint16 {
         }
     }
 
+    // divide returns x/y
     public fun divide(x: Uint16, y: Uint16): Uint16 {
         let (r, _) = divide_mod(x, y);
         r
     }
 
+    // mody returns x%y
     public fun mod(x: Uint16, y: Uint16): Uint16 {
         let (_, r) = divide_mod(x, y);
         r
+    }
+
+    // divide_mod_underlying returns x/y and x%y, where y is u8.
+    public fun divide_mod_underlying(x: Uint16, y: u8): (Uint16, u8) {
+        let (result, remainder) = divide_mod(x, new(0, y));
+        (result, downcast(remainder))
+    }
+
+    // divide underlying returns x/y, where y is u8
+    public fun divide_underlying(x: Uint16, y: u8): Uint16 {
+        let (result, _) = divide_mod(x, new(0, y));
+        result
     }
 
     public fun hi(x: Uint16): u8 {
@@ -282,13 +310,28 @@ module more_math::uint16 {
             lo: x.lo ^ y.lo,
         }
     }
+
+    // Indicate the value will overflow if converted to underlying type.
+    public fun underlying_overflow(x: Uint16): bool {
+        x.hi != 0
+    }
+
+    // downcast converts Uint16 to u8. abort if overflow.
+    public fun downcast(x: Uint16): u8 {
+        assert!(
+            !underlying_overflow(x),
+            E_OVERFLOW,
+        );
+
+        x.lo
+    }
 }
 
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: double-width
-// Version: v1.2.6
+// Version: v1.2.7
 module more_math::uint128 {
     struct Uint128 has store, copy, drop {
         hi: u64,
@@ -410,13 +453,27 @@ module more_math::uint128 {
         (lo, hi)
     }
 
+    public fun underlying_mul_to_uint128(x: u64, y: u64): Uint128{
+        let (lo, hi) = underlying_mul_with_carry(x, y);
+        new(hi, lo)
+    }
+
     // x * y, abort if overflow
     public fun multiply(x: Uint128, y: Uint128): Uint128 {
-        assert!(x.hi * y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
+        assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y.lo);
         Uint128 {
             lo: xlyl,
             hi: x.lo * y.hi + x.hi * y.lo + xlyl_carry,
+        }
+    }
+
+    // x * y where y is u64
+    public fun multiply_underlying(x: Uint128, y: u64): Uint128 {
+        let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
+        Uint128 {
+            lo: xlyl,
+            hi: x.hi * y + xlyl_carry,
         }
     }
 
@@ -545,14 +602,28 @@ module more_math::uint128 {
         }
     }
 
+    // divide returns x/y
     public fun divide(x: Uint128, y: Uint128): Uint128 {
         let (r, _) = divide_mod(x, y);
         r
     }
 
+    // mody returns x%y
     public fun mod(x: Uint128, y: Uint128): Uint128 {
         let (_, r) = divide_mod(x, y);
         r
+    }
+
+    // divide_mod_underlying returns x/y and x%y, where y is u64.
+    public fun divide_mod_underlying(x: Uint128, y: u64): (Uint128, u64) {
+        let (result, remainder) = divide_mod(x, new(0, y));
+        (result, downcast(remainder))
+    }
+
+    // divide underlying returns x/y, where y is u64
+    public fun divide_underlying(x: Uint128, y: u64): Uint128 {
+        let (result, _) = divide_mod(x, new(0, y));
+        result
     }
 
     public fun hi(x: Uint128): u64 {
@@ -583,13 +654,28 @@ module more_math::uint128 {
             lo: x.lo ^ y.lo,
         }
     }
+
+    // Indicate the value will overflow if converted to underlying type.
+    public fun underlying_overflow(x: Uint128): bool {
+        x.hi != 0
+    }
+
+    // downcast converts Uint128 to u64. abort if overflow.
+    public fun downcast(x: Uint128): u64 {
+        assert!(
+            !underlying_overflow(x),
+            E_OVERFLOW,
+        );
+
+        x.lo
+    }
 }
 
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: double-width
-// Version: v1.2.6
+// Version: v1.2.7
 module more_math::uint256 {
     struct Uint256 has store, copy, drop {
         hi: u128,
@@ -711,13 +797,27 @@ module more_math::uint256 {
         (lo, hi)
     }
 
+    public fun underlying_mul_to_uint256(x: u128, y: u128): Uint256{
+        let (lo, hi) = underlying_mul_with_carry(x, y);
+        new(hi, lo)
+    }
+
     // x * y, abort if overflow
     public fun multiply(x: Uint256, y: Uint256): Uint256 {
-        assert!(x.hi * y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
+        assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y.lo);
         Uint256 {
             lo: xlyl,
             hi: x.lo * y.hi + x.hi * y.lo + xlyl_carry,
+        }
+    }
+
+    // x * y where y is u128
+    public fun multiply_underlying(x: Uint256, y: u128): Uint256 {
+        let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
+        Uint256 {
+            lo: xlyl,
+            hi: x.hi * y + xlyl_carry,
         }
     }
 
@@ -851,14 +951,28 @@ module more_math::uint256 {
         }
     }
 
+    // divide returns x/y
     public fun divide(x: Uint256, y: Uint256): Uint256 {
         let (r, _) = divide_mod(x, y);
         r
     }
 
+    // mody returns x%y
     public fun mod(x: Uint256, y: Uint256): Uint256 {
         let (_, r) = divide_mod(x, y);
         r
+    }
+
+    // divide_mod_underlying returns x/y and x%y, where y is u128.
+    public fun divide_mod_underlying(x: Uint256, y: u128): (Uint256, u128) {
+        let (result, remainder) = divide_mod(x, new(0, y));
+        (result, downcast(remainder))
+    }
+
+    // divide underlying returns x/y, where y is u128
+    public fun divide_underlying(x: Uint256, y: u128): Uint256 {
+        let (result, _) = divide_mod(x, new(0, y));
+        result
     }
 
     public fun hi(x: Uint256): u128 {
@@ -888,5 +1002,20 @@ module more_math::uint256 {
             hi: x.hi ^ y.hi,
             lo: x.lo ^ y.lo,
         }
+    }
+
+    // Indicate the value will overflow if converted to underlying type.
+    public fun underlying_overflow(x: Uint256): bool {
+        x.hi != 0
+    }
+
+    // downcast converts Uint256 to u128. abort if overflow.
+    public fun downcast(x: Uint256): u128 {
+        assert!(
+            !underlying_overflow(x),
+            E_OVERFLOW,
+        );
+
+        x.lo
     }
 }
