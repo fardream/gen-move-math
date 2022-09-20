@@ -11,6 +11,7 @@ Following are currently provided:
 - signed integer.
 - double width unsigned integer (u256 and u16).
 - decimal.
+- signed decimal.
 
 ## Use as a move package
 

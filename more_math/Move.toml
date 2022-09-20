@@ -1,17 +1,17 @@
 [package]
-name = "more_math"
-version = "1.2.6"
-license = "MIT"
-authors = ["Chao Xu <fardream@users.noreply.github.com>"]
+name = 'more_math'
+version = '1.2.7'
+license = 'MIT'
+authors = ['Chao Xu <fardream@users.noreply.github.com>']
 
 [dependencies]
 
 [dev-dependencies]
-MoveStdlib = { git = "git@github.com:move-language/move.git", rev = "main", subdir = "language/move-stdlib" }
-MoveNursery = { git = "git@github.com:move-language/move.git", rev = "main", subdir = "language/move-stdlib/nursery" }
+MoveStdlib = { git = 'git@github.com:move-language/move.git', rev = 'main', subdir = 'language/move-stdlib' }
+MoveNursery = { git = 'git@github.com:move-language/move.git', rev = 'main', subdir = 'language/move-stdlib/nursery' }
 
 [addresses]
-more_math = "0x0"
+more_math = '_'
 
 [dev-addresses]
-std = "0x1"
+std = '0x1'
