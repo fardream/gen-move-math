@@ -3,7 +3,7 @@ module github.com/fardream/gen-move-math
 go 1.19
 
 require (
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	golang.org/x/exp v0.0.0-20220915105810-2d61f44442a3
 )
 
