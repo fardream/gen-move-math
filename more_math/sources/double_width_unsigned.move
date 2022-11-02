@@ -22,13 +22,14 @@ module more_math::uint16 {
     const E_OVERFLOW: u64 = 1001;
     const E_DIVISION_BY_ZERO: u64 = 1002;
 
-    // new creates a new Uint16
+    /// new creates a new Uint16
     public fun new(hi: u8, lo: u8): Uint16 {
         Uint16 {
             hi, lo,
         }
     }
 
+    /// create a new zero value of the Uint16
     public fun zero(): Uint16 {
         Uint16 {
             hi: 0,
@@ -36,24 +37,38 @@ module more_math::uint16 {
         }
     }
 
+    /// checks if the value is zero.
     public fun is_zero(x: &Uint16): bool {
         x.hi == 0 && x.lo == 0
     }
 
+    /// equal
     public fun equal(x: Uint16, y: Uint16): bool {
         x.hi == y.hi && x.lo == y.lo
     }
 
+    /// greater
     public fun greater(x: Uint16, y: Uint16): bool {
         (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo > y.lo))
     }
 
+    /// greater_or_equal
+    public fun greater_or_equal(x: Uint16, y: Uint16): bool {
+        (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo >= y.lo))
+    }
+
+    /// less
     public fun less(x: Uint16, y: Uint16): bool {
         (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo < y.lo))
     }
 
-    // add two underlying with carry - will never abort.
-    // First return value is the value of the result, the second return value indicate if carry happens.
+    /// less_or_equal
+    public fun less_or_equal(x: Uint16, y: Uint16): bool {
+        (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo <= y.lo))
+    }
+
+    /// add two underlying with carry - will never abort.
+    /// First return value is the value of the result, the second return value indicate if carry happens.
     public fun underlying_add_with_carry(x: u8, y: u8):(u8, u8) {
         let r = UNDERLYING_ONES - x;
         if (r < y) {
@@ -63,8 +78,8 @@ module more_math::uint16 {
         }
     }
 
-    // subtract y from x with borrow - will never abort.
-    // First return value is the value of the result, the second return value indicate if borrow happens.
+    /// subtract y from x with borrow - will never abort.
+    /// First return value is the value of the result, the second return value indicate if borrow happens.
     public fun underlying_sub_with_borrow(x: u8, y:u8): (u8, u8) {
         if (x < y) {
             ((UNDERLYING_ONES - y) + 1 + x, 1)
@@ -73,17 +88,17 @@ module more_math::uint16 {
         }
     }
 
-    // add x and y, plus possible carry, abort when overflow
+    /// add x and y, plus possible carry, abort when overflow
     fun underlying_add_plus_carry(x: u8, y: u8, carry: u8): u8 {
         x + y + carry // will abort if overflow
     }
 
-    // subtract y and possible borrow from x, abort when underflow
+    /// subtract y and possible borrow from x, abort when underflow
     fun underlying_sub_minus_borrow(x: u8, y: u8, borrow: u8): u8 {
         x - y - borrow // will abort if underflow
     }
 
-    // add x and y, abort if overflows
+    /// add x and y, abort if overflows
     public fun add(x: Uint16, y: Uint16): Uint16 {
         let (lo, c) = underlying_add_with_carry(x.lo, y.lo);
         let hi = underlying_add_plus_carry(x.hi, y.hi, c);
@@ -93,7 +108,16 @@ module more_math::uint16 {
         }
     }
 
-    // subtract y from x, abort if underflows
+    /// add u8 to Uint16
+    public fun add_underlying(x:Uint16, y: u8): Uint16 {
+        let (lo, carry) = underlying_add_with_carry(x.lo, y);
+        Uint16 {
+            lo,
+            hi: x.hi + carry,
+        }
+    }
+
+    /// subtract y from x, abort if underflows
     public fun subtract(x: Uint16, y: Uint16): Uint16 {
         let (lo, b) = underlying_sub_with_borrow(x.lo, y.lo);
         let hi = underlying_sub_minus_borrow(x.hi, y.hi, b);
@@ -103,7 +127,17 @@ module more_math::uint16 {
         }
     }
 
-    // x * y, first return value is the lower part of the result, second return value is the upper part of the result.
+    /// subtract y from x, abort if underflows
+    public fun subtract_underlying(x: Uint16, y: u8): Uint16 {
+        let (lo, b) = underlying_sub_with_borrow(x.lo, y);
+        let hi = x.hi - b;
+        Uint16 {
+            hi,
+            lo,
+        }
+    }
+
+    /// x * y, first return value is the lower part of the result, second return value is the upper part of the result.
     public fun underlying_mul_with_carry(x: u8, y: u8):(u8, u8) {
         // split x and y into lower part and upper part.
         // xh, xl, yh, yl
@@ -129,7 +163,7 @@ module more_math::uint16 {
         new(hi, lo)
     }
 
-    // x * y, abort if overflow
+    /// x * y, abort if overflow
     public fun multiply(x: Uint16, y: Uint16): Uint16 {
         assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y.lo);
@@ -139,7 +173,7 @@ module more_math::uint16 {
         }
     }
 
-    // x * y where y is u8
+    /// x * y where y is u8
     public fun multiply_underlying(x: Uint16, y: u8): Uint16 {
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
         Uint16 {
@@ -148,7 +182,7 @@ module more_math::uint16 {
         }
     }
 
-    // left shift, abort if shift is greater than the size of the int.
+    /// left shift, abort if shift is greater than the size of the int.
     public fun lsh(x: Uint16, y: u8): Uint16 {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -166,7 +200,7 @@ module more_math::uint16 {
         }
     }
 
-    // right shift, abort if shift is greater than the size of the int
+    /// right shift, abort if shift is greater than the size of the int
     public fun rsh(x: Uint16, y: u8): Uint16 {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -184,6 +218,7 @@ module more_math::uint16 {
         }
     }
 
+    /// count leading zeros of the underlying type u8
     public fun underlying_leading_zeros(x: u8): u8 {
         if (x == 0) {
             UNDERLYING_SIZE
@@ -207,6 +242,7 @@ module more_math::uint16 {
         }
     }
 
+    /// get number leading zeros
     public fun leading_zeros(x: Uint16): u8 {
         if (x.hi == 0) {
             UNDERLYING_SIZE + underlying_leading_zeros(x.lo)
@@ -215,15 +251,7 @@ module more_math::uint16 {
         }
     }
 
-    public fun add_underlying(x:Uint16, y: u8): Uint16 {
-        let (lo, carry) = underlying_add_with_carry(x.lo, y);
-        Uint16 {
-            lo,
-            hi: x.hi + carry,
-        }
-    }
-
-    // divide_mod returns x/y and x%y
+    /// divide_mod returns x/y and x%y
     public fun divide_mod(x: Uint16, y: Uint16): (Uint16, Uint16) {
         assert!(y.hi != 0 || y.lo != 0, E_DIVISION_BY_ZERO);
         if (greater(y, x)) {
@@ -258,34 +286,36 @@ module more_math::uint16 {
         }
     }
 
-    // divide returns x/y
+    /// divide returns x/y
     public fun divide(x: Uint16, y: Uint16): Uint16 {
         let (r, _) = divide_mod(x, y);
         r
     }
 
-    // mody returns x%y
+    /// mod returns x%y
     public fun mod(x: Uint16, y: Uint16): Uint16 {
         let (_, r) = divide_mod(x, y);
         r
     }
 
-    // divide_mod_underlying returns x/y and x%y, where y is u8.
+    /// divide_mod_underlying returns x/y and x%y, where y is u8.
     public fun divide_mod_underlying(x: Uint16, y: u8): (Uint16, u8) {
         let (result, remainder) = divide_mod(x, new(0, y));
         (result, downcast(remainder))
     }
 
-    // divide underlying returns x/y, where y is u8
+    /// divide underlying returns x/y, where y is u8
     public fun divide_underlying(x: Uint16, y: u8): Uint16 {
         let (result, _) = divide_mod(x, new(0, y));
         result
     }
 
+    /// hi component of the value.
     public fun hi(x: Uint16): u8 {
         x.hi
     }
 
+    /// lo component of the value
     public fun lo(x: Uint16): u8 {
         x.lo
     }
@@ -311,12 +341,12 @@ module more_math::uint16 {
         }
     }
 
-    // Indicate the value will overflow if converted to underlying type.
+    /// Indicate the value will overflow if converted to underlying type.
     public fun underlying_overflow(x: Uint16): bool {
         x.hi != 0
     }
 
-    // downcast converts Uint16 to u8. abort if overflow.
+    /// downcast converts Uint16 to u8. abort if overflow.
     public fun downcast(x: Uint16): u8 {
         assert!(
             !underlying_overflow(x),
@@ -351,13 +381,14 @@ module more_math::uint128 {
     const E_OVERFLOW: u64 = 1001;
     const E_DIVISION_BY_ZERO: u64 = 1002;
 
-    // new creates a new Uint128
+    /// new creates a new Uint128
     public fun new(hi: u64, lo: u64): Uint128 {
         Uint128 {
             hi, lo,
         }
     }
 
+    /// create a new zero value of the Uint128
     public fun zero(): Uint128 {
         Uint128 {
             hi: 0,
@@ -365,24 +396,38 @@ module more_math::uint128 {
         }
     }
 
+    /// checks if the value is zero.
     public fun is_zero(x: &Uint128): bool {
         x.hi == 0 && x.lo == 0
     }
 
+    /// equal
     public fun equal(x: Uint128, y: Uint128): bool {
         x.hi == y.hi && x.lo == y.lo
     }
 
+    /// greater
     public fun greater(x: Uint128, y: Uint128): bool {
         (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo > y.lo))
     }
 
+    /// greater_or_equal
+    public fun greater_or_equal(x: Uint128, y: Uint128): bool {
+        (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo >= y.lo))
+    }
+
+    /// less
     public fun less(x: Uint128, y: Uint128): bool {
         (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo < y.lo))
     }
 
-    // add two underlying with carry - will never abort.
-    // First return value is the value of the result, the second return value indicate if carry happens.
+    /// less_or_equal
+    public fun less_or_equal(x: Uint128, y: Uint128): bool {
+        (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo <= y.lo))
+    }
+
+    /// add two underlying with carry - will never abort.
+    /// First return value is the value of the result, the second return value indicate if carry happens.
     public fun underlying_add_with_carry(x: u64, y: u64):(u64, u64) {
         let r = UNDERLYING_ONES - x;
         if (r < y) {
@@ -392,8 +437,8 @@ module more_math::uint128 {
         }
     }
 
-    // subtract y from x with borrow - will never abort.
-    // First return value is the value of the result, the second return value indicate if borrow happens.
+    /// subtract y from x with borrow - will never abort.
+    /// First return value is the value of the result, the second return value indicate if borrow happens.
     public fun underlying_sub_with_borrow(x: u64, y:u64): (u64, u64) {
         if (x < y) {
             ((UNDERLYING_ONES - y) + 1 + x, 1)
@@ -402,17 +447,17 @@ module more_math::uint128 {
         }
     }
 
-    // add x and y, plus possible carry, abort when overflow
+    /// add x and y, plus possible carry, abort when overflow
     fun underlying_add_plus_carry(x: u64, y: u64, carry: u64): u64 {
         x + y + carry // will abort if overflow
     }
 
-    // subtract y and possible borrow from x, abort when underflow
+    /// subtract y and possible borrow from x, abort when underflow
     fun underlying_sub_minus_borrow(x: u64, y: u64, borrow: u64): u64 {
         x - y - borrow // will abort if underflow
     }
 
-    // add x and y, abort if overflows
+    /// add x and y, abort if overflows
     public fun add(x: Uint128, y: Uint128): Uint128 {
         let (lo, c) = underlying_add_with_carry(x.lo, y.lo);
         let hi = underlying_add_plus_carry(x.hi, y.hi, c);
@@ -422,7 +467,16 @@ module more_math::uint128 {
         }
     }
 
-    // subtract y from x, abort if underflows
+    /// add u64 to Uint128
+    public fun add_underlying(x:Uint128, y: u64): Uint128 {
+        let (lo, carry) = underlying_add_with_carry(x.lo, y);
+        Uint128 {
+            lo,
+            hi: x.hi + carry,
+        }
+    }
+
+    /// subtract y from x, abort if underflows
     public fun subtract(x: Uint128, y: Uint128): Uint128 {
         let (lo, b) = underlying_sub_with_borrow(x.lo, y.lo);
         let hi = underlying_sub_minus_borrow(x.hi, y.hi, b);
@@ -432,7 +486,17 @@ module more_math::uint128 {
         }
     }
 
-    // x * y, first return value is the lower part of the result, second return value is the upper part of the result.
+    /// subtract y from x, abort if underflows
+    public fun subtract_underlying(x: Uint128, y: u64): Uint128 {
+        let (lo, b) = underlying_sub_with_borrow(x.lo, y);
+        let hi = x.hi - b;
+        Uint128 {
+            hi,
+            lo,
+        }
+    }
+
+    /// x * y, first return value is the lower part of the result, second return value is the upper part of the result.
     public fun underlying_mul_with_carry(x: u64, y: u64):(u64, u64) {
         // split x and y into lower part and upper part.
         // xh, xl, yh, yl
@@ -458,7 +522,7 @@ module more_math::uint128 {
         new(hi, lo)
     }
 
-    // x * y, abort if overflow
+    /// x * y, abort if overflow
     public fun multiply(x: Uint128, y: Uint128): Uint128 {
         assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y.lo);
@@ -468,7 +532,7 @@ module more_math::uint128 {
         }
     }
 
-    // x * y where y is u64
+    /// x * y where y is u64
     public fun multiply_underlying(x: Uint128, y: u64): Uint128 {
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
         Uint128 {
@@ -477,7 +541,7 @@ module more_math::uint128 {
         }
     }
 
-    // left shift, abort if shift is greater than the size of the int.
+    /// left shift, abort if shift is greater than the size of the int.
     public fun lsh(x: Uint128, y: u8): Uint128 {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -495,7 +559,7 @@ module more_math::uint128 {
         }
     }
 
-    // right shift, abort if shift is greater than the size of the int
+    /// right shift, abort if shift is greater than the size of the int
     public fun rsh(x: Uint128, y: u8): Uint128 {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -513,6 +577,7 @@ module more_math::uint128 {
         }
     }
 
+    /// count leading zeros of the underlying type u64
     public fun underlying_leading_zeros(x: u64): u8 {
         if (x == 0) {
             UNDERLYING_SIZE
@@ -551,6 +616,7 @@ module more_math::uint128 {
         }
     }
 
+    /// get number leading zeros
     public fun leading_zeros(x: Uint128): u8 {
         if (x.hi == 0) {
             UNDERLYING_SIZE + underlying_leading_zeros(x.lo)
@@ -559,15 +625,7 @@ module more_math::uint128 {
         }
     }
 
-    public fun add_underlying(x:Uint128, y: u64): Uint128 {
-        let (lo, carry) = underlying_add_with_carry(x.lo, y);
-        Uint128 {
-            lo,
-            hi: x.hi + carry,
-        }
-    }
-
-    // divide_mod returns x/y and x%y
+    /// divide_mod returns x/y and x%y
     public fun divide_mod(x: Uint128, y: Uint128): (Uint128, Uint128) {
         assert!(y.hi != 0 || y.lo != 0, E_DIVISION_BY_ZERO);
         if (greater(y, x)) {
@@ -602,34 +660,36 @@ module more_math::uint128 {
         }
     }
 
-    // divide returns x/y
+    /// divide returns x/y
     public fun divide(x: Uint128, y: Uint128): Uint128 {
         let (r, _) = divide_mod(x, y);
         r
     }
 
-    // mody returns x%y
+    /// mod returns x%y
     public fun mod(x: Uint128, y: Uint128): Uint128 {
         let (_, r) = divide_mod(x, y);
         r
     }
 
-    // divide_mod_underlying returns x/y and x%y, where y is u64.
+    /// divide_mod_underlying returns x/y and x%y, where y is u64.
     public fun divide_mod_underlying(x: Uint128, y: u64): (Uint128, u64) {
         let (result, remainder) = divide_mod(x, new(0, y));
         (result, downcast(remainder))
     }
 
-    // divide underlying returns x/y, where y is u64
+    /// divide underlying returns x/y, where y is u64
     public fun divide_underlying(x: Uint128, y: u64): Uint128 {
         let (result, _) = divide_mod(x, new(0, y));
         result
     }
 
+    /// hi component of the value.
     public fun hi(x: Uint128): u64 {
         x.hi
     }
 
+    /// lo component of the value
     public fun lo(x: Uint128): u64 {
         x.lo
     }
@@ -655,12 +715,12 @@ module more_math::uint128 {
         }
     }
 
-    // Indicate the value will overflow if converted to underlying type.
+    /// Indicate the value will overflow if converted to underlying type.
     public fun underlying_overflow(x: Uint128): bool {
         x.hi != 0
     }
 
-    // downcast converts Uint128 to u64. abort if overflow.
+    /// downcast converts Uint128 to u64. abort if overflow.
     public fun downcast(x: Uint128): u64 {
         assert!(
             !underlying_overflow(x),
@@ -695,13 +755,14 @@ module more_math::uint256 {
     const E_OVERFLOW: u64 = 1001;
     const E_DIVISION_BY_ZERO: u64 = 1002;
 
-    // new creates a new Uint256
+    /// new creates a new Uint256
     public fun new(hi: u128, lo: u128): Uint256 {
         Uint256 {
             hi, lo,
         }
     }
 
+    /// create a new zero value of the Uint256
     public fun zero(): Uint256 {
         Uint256 {
             hi: 0,
@@ -709,24 +770,38 @@ module more_math::uint256 {
         }
     }
 
+    /// checks if the value is zero.
     public fun is_zero(x: &Uint256): bool {
         x.hi == 0 && x.lo == 0
     }
 
+    /// equal
     public fun equal(x: Uint256, y: Uint256): bool {
         x.hi == y.hi && x.lo == y.lo
     }
 
+    /// greater
     public fun greater(x: Uint256, y: Uint256): bool {
         (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo > y.lo))
     }
 
+    /// greater_or_equal
+    public fun greater_or_equal(x: Uint256, y: Uint256): bool {
+        (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo >= y.lo))
+    }
+
+    /// less
     public fun less(x: Uint256, y: Uint256): bool {
         (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo < y.lo))
     }
 
-    // add two underlying with carry - will never abort.
-    // First return value is the value of the result, the second return value indicate if carry happens.
+    /// less_or_equal
+    public fun less_or_equal(x: Uint256, y: Uint256): bool {
+        (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo <= y.lo))
+    }
+
+    /// add two underlying with carry - will never abort.
+    /// First return value is the value of the result, the second return value indicate if carry happens.
     public fun underlying_add_with_carry(x: u128, y: u128):(u128, u128) {
         let r = UNDERLYING_ONES - x;
         if (r < y) {
@@ -736,8 +811,8 @@ module more_math::uint256 {
         }
     }
 
-    // subtract y from x with borrow - will never abort.
-    // First return value is the value of the result, the second return value indicate if borrow happens.
+    /// subtract y from x with borrow - will never abort.
+    /// First return value is the value of the result, the second return value indicate if borrow happens.
     public fun underlying_sub_with_borrow(x: u128, y:u128): (u128, u128) {
         if (x < y) {
             ((UNDERLYING_ONES - y) + 1 + x, 1)
@@ -746,17 +821,17 @@ module more_math::uint256 {
         }
     }
 
-    // add x and y, plus possible carry, abort when overflow
+    /// add x and y, plus possible carry, abort when overflow
     fun underlying_add_plus_carry(x: u128, y: u128, carry: u128): u128 {
         x + y + carry // will abort if overflow
     }
 
-    // subtract y and possible borrow from x, abort when underflow
+    /// subtract y and possible borrow from x, abort when underflow
     fun underlying_sub_minus_borrow(x: u128, y: u128, borrow: u128): u128 {
         x - y - borrow // will abort if underflow
     }
 
-    // add x and y, abort if overflows
+    /// add x and y, abort if overflows
     public fun add(x: Uint256, y: Uint256): Uint256 {
         let (lo, c) = underlying_add_with_carry(x.lo, y.lo);
         let hi = underlying_add_plus_carry(x.hi, y.hi, c);
@@ -766,7 +841,16 @@ module more_math::uint256 {
         }
     }
 
-    // subtract y from x, abort if underflows
+    /// add u128 to Uint256
+    public fun add_underlying(x:Uint256, y: u128): Uint256 {
+        let (lo, carry) = underlying_add_with_carry(x.lo, y);
+        Uint256 {
+            lo,
+            hi: x.hi + carry,
+        }
+    }
+
+    /// subtract y from x, abort if underflows
     public fun subtract(x: Uint256, y: Uint256): Uint256 {
         let (lo, b) = underlying_sub_with_borrow(x.lo, y.lo);
         let hi = underlying_sub_minus_borrow(x.hi, y.hi, b);
@@ -776,7 +860,17 @@ module more_math::uint256 {
         }
     }
 
-    // x * y, first return value is the lower part of the result, second return value is the upper part of the result.
+    /// subtract y from x, abort if underflows
+    public fun subtract_underlying(x: Uint256, y: u128): Uint256 {
+        let (lo, b) = underlying_sub_with_borrow(x.lo, y);
+        let hi = x.hi - b;
+        Uint256 {
+            hi,
+            lo,
+        }
+    }
+
+    /// x * y, first return value is the lower part of the result, second return value is the upper part of the result.
     public fun underlying_mul_with_carry(x: u128, y: u128):(u128, u128) {
         // split x and y into lower part and upper part.
         // xh, xl, yh, yl
@@ -802,7 +896,7 @@ module more_math::uint256 {
         new(hi, lo)
     }
 
-    // x * y, abort if overflow
+    /// x * y, abort if overflow
     public fun multiply(x: Uint256, y: Uint256): Uint256 {
         assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y.lo);
@@ -812,7 +906,7 @@ module more_math::uint256 {
         }
     }
 
-    // x * y where y is u128
+    /// x * y where y is u128
     public fun multiply_underlying(x: Uint256, y: u128): Uint256 {
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
         Uint256 {
@@ -821,7 +915,7 @@ module more_math::uint256 {
         }
     }
 
-    // left shift, abort if shift is greater than the size of the int.
+    /// left shift, abort if shift is greater than the size of the int.
     public fun lsh(x: Uint256, y: u8): Uint256 {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -839,7 +933,7 @@ module more_math::uint256 {
         }
     }
 
-    // right shift, abort if shift is greater than the size of the int
+    /// right shift, abort if shift is greater than the size of the int
     public fun rsh(x: Uint256, y: u8): Uint256 {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -857,6 +951,7 @@ module more_math::uint256 {
         }
     }
 
+    /// count leading zeros of the underlying type u128
     public fun underlying_leading_zeros(x: u128): u8 {
         if (x == 0) {
             UNDERLYING_SIZE
@@ -900,6 +995,7 @@ module more_math::uint256 {
         }
     }
 
+    /// get number leading zeros
     public fun leading_zeros(x: Uint256): u8 {
         if (x.hi == 0) {
             UNDERLYING_SIZE + underlying_leading_zeros(x.lo)
@@ -908,15 +1004,7 @@ module more_math::uint256 {
         }
     }
 
-    public fun add_underlying(x:Uint256, y: u128): Uint256 {
-        let (lo, carry) = underlying_add_with_carry(x.lo, y);
-        Uint256 {
-            lo,
-            hi: x.hi + carry,
-        }
-    }
-
-    // divide_mod returns x/y and x%y
+    /// divide_mod returns x/y and x%y
     public fun divide_mod(x: Uint256, y: Uint256): (Uint256, Uint256) {
         assert!(y.hi != 0 || y.lo != 0, E_DIVISION_BY_ZERO);
         if (greater(y, x)) {
@@ -951,34 +1039,36 @@ module more_math::uint256 {
         }
     }
 
-    // divide returns x/y
+    /// divide returns x/y
     public fun divide(x: Uint256, y: Uint256): Uint256 {
         let (r, _) = divide_mod(x, y);
         r
     }
 
-    // mody returns x%y
+    /// mod returns x%y
     public fun mod(x: Uint256, y: Uint256): Uint256 {
         let (_, r) = divide_mod(x, y);
         r
     }
 
-    // divide_mod_underlying returns x/y and x%y, where y is u128.
+    /// divide_mod_underlying returns x/y and x%y, where y is u128.
     public fun divide_mod_underlying(x: Uint256, y: u128): (Uint256, u128) {
         let (result, remainder) = divide_mod(x, new(0, y));
         (result, downcast(remainder))
     }
 
-    // divide underlying returns x/y, where y is u128
+    /// divide underlying returns x/y, where y is u128
     public fun divide_underlying(x: Uint256, y: u128): Uint256 {
         let (result, _) = divide_mod(x, new(0, y));
         result
     }
 
+    /// hi component of the value.
     public fun hi(x: Uint256): u128 {
         x.hi
     }
 
+    /// lo component of the value
     public fun lo(x: Uint256): u128 {
         x.lo
     }
@@ -1004,12 +1094,12 @@ module more_math::uint256 {
         }
     }
 
-    // Indicate the value will overflow if converted to underlying type.
+    /// Indicate the value will overflow if converted to underlying type.
     public fun underlying_overflow(x: Uint256): bool {
         x.hi != 0
     }
 
-    // downcast converts Uint256 to u128. abort if overflow.
+    /// downcast converts Uint256 to u128. abort if overflow.
     public fun downcast(x: Uint256): u128 {
         assert!(
             !underlying_overflow(x),

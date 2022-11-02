@@ -22,13 +22,14 @@ module {{.Address}}::{{.ModuleName}} {
     const E_OVERFLOW: u64 = 1001;
     const E_DIVISION_BY_ZERO: u64 = 1002;
 
-    // new creates a new {{.TypeName}}
+    /// new creates a new {{.TypeName}}
     public fun new(hi: {{.BaseTypeName}}, lo: {{.BaseTypeName}}): {{.TypeName}} {
         {{.TypeName}} {
             hi, lo,
         }
     }
 
+    /// create a new zero value of the {{.TypeName}}
     public fun zero(): {{.TypeName}} {
         {{.TypeName}} {
             hi: 0,
@@ -36,24 +37,38 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
+    /// checks if the value is zero.
     public fun is_zero(x: &{{.TypeName}}): bool {
         x.hi == 0 && x.lo == 0
     }
 
+    /// equal
     public fun equal(x: {{.TypeName}}, y: {{.TypeName}}): bool {
         x.hi == y.hi && x.lo == y.lo
     }
 
+    /// greater
     public fun greater(x: {{.TypeName}}, y: {{.TypeName}}): bool {
         (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo > y.lo))
     }
 
+    /// greater_or_equal
+    public fun greater_or_equal(x: {{.TypeName}}, y: {{.TypeName}}): bool {
+        (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo >= y.lo))
+    }
+
+    /// less
     public fun less(x: {{.TypeName}}, y: {{.TypeName}}): bool {
         (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo < y.lo))
     }
 
-    // add two underlying with carry - will never abort.
-    // First return value is the value of the result, the second return value indicate if carry happens.
+    /// less_or_equal
+    public fun less_or_equal(x: {{.TypeName}}, y: {{.TypeName}}): bool {
+        (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo <= y.lo))
+    }
+
+    /// add two underlying with carry - will never abort.
+    /// First return value is the value of the result, the second return value indicate if carry happens.
     public fun underlying_add_with_carry(x: {{.BaseTypeName}}, y: {{.BaseTypeName}}):({{.BaseTypeName}}, {{.BaseTypeName}}) {
         let r = UNDERLYING_ONES - x;
         if (r < y) {
@@ -63,8 +78,8 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // subtract y from x with borrow - will never abort.
-    // First return value is the value of the result, the second return value indicate if borrow happens.
+    /// subtract y from x with borrow - will never abort.
+    /// First return value is the value of the result, the second return value indicate if borrow happens.
     public fun underlying_sub_with_borrow(x: {{.BaseTypeName}}, y:{{.BaseTypeName}}): ({{.BaseTypeName}}, {{.BaseTypeName}}) {
         if (x < y) {
             ((UNDERLYING_ONES - y) + 1 + x, 1)
@@ -73,17 +88,17 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // add x and y, plus possible carry, abort when overflow
+    /// add x and y, plus possible carry, abort when overflow
     fun underlying_add_plus_carry(x: {{.BaseTypeName}}, y: {{.BaseTypeName}}, carry: {{.BaseTypeName}}): {{.BaseTypeName}} {
         x + y + carry // will abort if overflow
     }
 
-    // subtract y and possible borrow from x, abort when underflow
+    /// subtract y and possible borrow from x, abort when underflow
     fun underlying_sub_minus_borrow(x: {{.BaseTypeName}}, y: {{.BaseTypeName}}, borrow: {{.BaseTypeName}}): {{.BaseTypeName}} {
         x - y - borrow // will abort if underflow
     }
 
-    // add x and y, abort if overflows
+    /// add x and y, abort if overflows
     public fun add(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         let (lo, c) = underlying_add_with_carry(x.lo, y.lo);
         let hi = underlying_add_plus_carry(x.hi, y.hi, c);
@@ -93,7 +108,16 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // subtract y from x, abort if underflows
+    /// add {{.BaseTypeName}} to {{.TypeName}}
+    public fun add_underlying(x:{{.TypeName}}, y: {{.BaseTypeName}}): {{.TypeName}} {
+        let (lo, carry) = underlying_add_with_carry(x.lo, y);
+        {{.TypeName}} {
+            lo,
+            hi: x.hi + carry,
+        }
+    }
+
+    /// subtract y from x, abort if underflows
     public fun subtract(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         let (lo, b) = underlying_sub_with_borrow(x.lo, y.lo);
         let hi = underlying_sub_minus_borrow(x.hi, y.hi, b);
@@ -103,7 +127,17 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // x * y, first return value is the lower part of the result, second return value is the upper part of the result.
+    /// subtract y from x, abort if underflows
+    public fun subtract_underlying(x: {{.TypeName}}, y: {{.BaseTypeName}}): {{.TypeName}} {
+        let (lo, b) = underlying_sub_with_borrow(x.lo, y);
+        let hi = x.hi - b;
+        {{.TypeName}} {
+            hi,
+            lo,
+        }
+    }
+
+    /// x * y, first return value is the lower part of the result, second return value is the upper part of the result.
     public fun underlying_mul_with_carry(x: {{.BaseTypeName}}, y: {{.BaseTypeName}}):({{.BaseTypeName}}, {{.BaseTypeName}}) {
         // split x and y into lower part and upper part.
         // xh, xl, yh, yl
@@ -129,7 +163,7 @@ module {{.Address}}::{{.ModuleName}} {
         new(hi, lo)
     }
 
-    // x * y, abort if overflow
+    /// x * y, abort if overflow
     public fun multiply(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y.lo);
@@ -139,7 +173,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // x * y where y is {{.BaseTypeName}}
+    /// x * y where y is {{.BaseTypeName}}
     public fun multiply_underlying(x: {{.TypeName}}, y: {{.BaseTypeName}}): {{.TypeName}} {
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
         {{.TypeName}} {
@@ -148,7 +182,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // left shift, abort if shift is greater than the size of the int.
+    /// left shift, abort if shift is greater than the size of the int.
     public fun lsh(x: {{.TypeName}}, y: u8): {{.TypeName}} {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -166,7 +200,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // right shift, abort if shift is greater than the size of the int
+    /// right shift, abort if shift is greater than the size of the int
     public fun rsh(x: {{.TypeName}}, y: u8): {{.TypeName}} {
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
         if (y >= UNDERLYING_SIZE) {
@@ -184,6 +218,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
+    /// count leading zeros of the underlying type {{.BaseTypeName}}
     public fun underlying_leading_zeros(x: {{.BaseTypeName}}): u8 {
         if (x == 0) {
             UNDERLYING_SIZE
@@ -199,6 +234,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
+    /// get number leading zeros
     public fun leading_zeros(x: {{.TypeName}}): u8 {
         if (x.hi == 0) {
             UNDERLYING_SIZE + underlying_leading_zeros(x.lo)
@@ -207,15 +243,7 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    public fun add_underlying(x:{{.TypeName}}, y: {{.BaseTypeName}}): {{.TypeName}} {
-        let (lo, carry) = underlying_add_with_carry(x.lo, y);
-        {{.TypeName}} {
-            lo,
-            hi: x.hi + carry,
-        }
-    }
-
-    // divide_mod returns x/y and x%y
+    /// divide_mod returns x/y and x%y
     public fun divide_mod(x: {{.TypeName}}, y: {{.TypeName}}): ({{.TypeName}}, {{.TypeName}}) {
         assert!(y.hi != 0 || y.lo != 0, E_DIVISION_BY_ZERO);
         if (greater(y, x)) {
@@ -250,34 +278,36 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // divide returns x/y
+    /// divide returns x/y
     public fun divide(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         let (r, _) = divide_mod(x, y);
         r
     }
 
-    // mody returns x%y
+    /// mod returns x%y
     public fun mod(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         let (_, r) = divide_mod(x, y);
         r
     }
 
-    // divide_mod_underlying returns x/y and x%y, where y is {{.BaseTypeName}}.
+    /// divide_mod_underlying returns x/y and x%y, where y is {{.BaseTypeName}}.
     public fun divide_mod_underlying(x: {{.TypeName}}, y: {{.BaseTypeName}}): ({{.TypeName}}, {{.BaseTypeName}}) {
         let (result, remainder) = divide_mod(x, new(0, y));
         (result, downcast(remainder))
     }
 
-    // divide underlying returns x/y, where y is {{.BaseTypeName}}
+    /// divide underlying returns x/y, where y is {{.BaseTypeName}}
     public fun divide_underlying(x: {{.TypeName}}, y: {{.BaseTypeName}}): {{.TypeName}} {
         let (result, _) = divide_mod(x, new(0, y));
         result
     }
 
+    /// hi component of the value.
     public fun hi(x: {{.TypeName}}): {{.BaseTypeName}} {
         x.hi
     }
 
+    /// lo component of the value
     public fun lo(x: {{.TypeName}}): {{.BaseTypeName}} {
         x.lo
     }
@@ -303,12 +333,12 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // Indicate the value will overflow if converted to underlying type.
+    /// Indicate the value will overflow if converted to underlying type.
     public fun underlying_overflow(x: {{.TypeName}}): bool {
         x.hi != 0
     }
 
-    // downcast converts {{.TypeName}} to {{.BaseTypeName}}. abort if overflow.
+    /// downcast converts {{.TypeName}} to {{.BaseTypeName}}. abort if overflow.
     public fun downcast(x: {{.TypeName}}): {{.BaseTypeName}} {
         assert!(
             !underlying_overflow(x),
