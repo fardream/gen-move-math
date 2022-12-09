@@ -203,7 +203,6 @@ module {{ .Address }}::{{ .ModuleName }} {
             value: (x.value >> n),
         }
     }
-    
 {{if .DoTest}}
 
     #[test]
