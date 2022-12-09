@@ -2,36 +2,36 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: -t
-// Version: v1.2.7
+// Version: v1.3.0
 module more_math::int8 {
-    // Int8 defines a signed integer with 8 bit width from u8.
-    // Negative numbers are represented by two's complements.
+    /// Int8 defines a signed integer with 8 bit width from u8.
+    /// Negative numbers are represented by two's complements.
     struct Int8 has store, copy, drop {
         value: u8,
     }
 
     const E_OUT_OF_RANGE: u64 = 1001;
 
-    // BREAK_POINT is the value of 2^(8-1), where positive and negative breaks.
-    // It is the minimal value of the negative value -2^(8-1).
-    // BREAK_POINT has the sign bit 1, and all lower bits 0.
+    /// BREAK_POINT is the value of 2^(8-1), where positive and negative breaks.
+    /// It is the minimal value of the negative value -2^(8-1).
+    /// BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: u8 = 128;
-    // Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
-    // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
+    /// Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    /// MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: u8 = 127;
-    // Max U is the max value of the unsigned, which is 2^8 - 1.
-    // MAX_U has all its bits 1.
+    /// Max U is the max value of the unsigned, which is 2^8 - 1.
+    /// MAX_U has all its bits 1.
     const MAX_U: u8 = 255;
 
-    // swap_half shifts the value of negative numbers to lower half of the total range,
-    // and non negative numbers to the upper half of the total range - this is essentially
-    // x + BREAK_POINT.
+    /// swap_half shifts the value of negative numbers to lower half of the total range,
+    /// and non negative numbers to the upper half of the total range - this is essentially
+    /// x + BREAK_POINT.
     fun swap_half(x: Int8): u8 {
         // Flip the sign bit - that's it.
         x.value^BREAK_POINT
     }
 
-    // new creates a Int8.
+    /// new creates a Int8.
     public fun new(absolute_value: u8, negative: bool): Int8 {
         assert!((negative && absolute_value <= BREAK_POINT) || (!negative && absolute_value < BREAK_POINT), E_OUT_OF_RANGE);
         if (!negative || absolute_value == 0) {
@@ -45,7 +45,7 @@ module more_math::int8 {
         }
     }
 
-    // is_negative checks if x is negative.
+    /// is_negative checks if x is negative.
     public fun is_negative(x: Int8): bool {
         x.value >= BREAK_POINT
     }
@@ -54,7 +54,7 @@ module more_math::int8 {
         x.value == 0
     }
 
-    // negative returns -x.
+    /// negative returns -x.
     public fun negative(x: Int8): Int8 {
         assert!(x.value != BREAK_POINT, E_OUT_OF_RANGE);
 
@@ -67,7 +67,7 @@ module more_math::int8 {
         }
     }
 
-    // abs returns the absolute value of x (as the unsigned underlying u8)
+    /// abs returns the absolute value of x (as the unsigned underlying u8)
     public fun abs(x: Int8): u8 {
         if (!is_negative(x)) {
             x.value
@@ -76,29 +76,29 @@ module more_math::int8 {
         }
     }
 
-    // zero obtains the zero value of the type.
+    /// zero obtains the zero value of the type.
     public fun zero(): Int8 {
         Int8 {
             value: 0
         }
     }
 
-    // equal checks if x == y
+    /// equal checks if x == y
     public fun equal(x: Int8, y: Int8): bool {
         x.value == y.value
     }
 
-    // greater checks if x > y
+    /// greater checks if x > y
     public fun greater(x: Int8, y:Int8): bool {
         swap_half(x) > swap_half(y)
     }
 
-    // less checks if x < y
+    /// less checks if x < y
     public fun less(x: Int8, y: Int8): bool {
         swap_half(x) < swap_half(y)
     }
 
-    // add x and y, abort if overflow
+    /// add x and y, abort if overflow
     public fun add(x: Int8, y: Int8): Int8 {
         // get the lower bits of x, and y, and the sign bits.
         let xl = x.value & MAX_POSITIVE;
@@ -119,7 +119,7 @@ module more_math::int8 {
         }
     }
 
-    // subtract y from x, abort if overflows
+    /// subtract y from x, abort if overflows
     public fun subtract(x: Int8, y: Int8): Int8 {
         // y is the smallest value of negative
         // x must be at most -1
@@ -135,7 +135,7 @@ module more_math::int8 {
         }
     }
 
-    // multiply x and y, abort if overflows
+    /// multiply x and y, abort if overflows
     public fun multiply(x: Int8, y: Int8): Int8 {
         let xv = abs(x);
         let yv = abs(y);
@@ -147,7 +147,7 @@ module more_math::int8 {
         }
     }
 
-    // divide x with y, abort if y is 0
+    /// divide x with y, abort if y is 0
     public fun divide(x: Int8, y: Int8): Int8 {
         let xv = abs(x);
         let yv = abs(y);
@@ -159,33 +159,51 @@ module more_math::int8 {
         }
     }
 
-    // mod remainder of the integer division (x - y*(x/y))
+    /// mod remainder of the integer division (x - y*(x/y))
     public fun mod(x: Int8, y: Int8): Int8 {
         subtract(x, multiply(y, divide(x, y)))
     }
 
-    // raw value
+    /// raw value returns the underlying unsigned integer u8
     public fun raw_value(x: Int8): u8 {
         x.value
     }
 
+    /// bitwise and 
     public fun bitwise_and(x: Int8, y: Int8): Int8 {
         Int8 {
             value: x.value & y.value,
         }
     }
 
+    /// bitwise or
     public fun bitwise_or(x: Int8, y: Int8): Int8 {
         Int8 {
             value: x.value | y.value,
         }
     }
 
+    /// bitwise xor
     public fun bitwise_xor(x: Int8, y: Int8): Int8 {
         Int8 {
             value: x.value ^ y.value,
         }
     }
+
+    /// left shift the integer
+    public fun lsh(x: Int8, n: u8): Int8 {
+        Int8 {
+            value: (x.value << n),
+        }
+    }
+
+    /// right shift the integer
+    public fun rsh(x: Int8, n: u8): Int8 {
+        Int8 {
+            value: (x.value >> n),
+        }
+    }
+    
 
 
     #[test]
@@ -244,36 +262,36 @@ module more_math::int8 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: -t
-// Version: v1.2.7
+// Version: v1.3.0
 module more_math::int64 {
-    // Int64 defines a signed integer with 64 bit width from u64.
-    // Negative numbers are represented by two's complements.
+    /// Int64 defines a signed integer with 64 bit width from u64.
+    /// Negative numbers are represented by two's complements.
     struct Int64 has store, copy, drop {
         value: u64,
     }
 
     const E_OUT_OF_RANGE: u64 = 1001;
 
-    // BREAK_POINT is the value of 2^(64-1), where positive and negative breaks.
-    // It is the minimal value of the negative value -2^(64-1).
-    // BREAK_POINT has the sign bit 1, and all lower bits 0.
+    /// BREAK_POINT is the value of 2^(64-1), where positive and negative breaks.
+    /// It is the minimal value of the negative value -2^(64-1).
+    /// BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: u64 = 9223372036854775808;
-    // Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
-    // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
+    /// Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    /// MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: u64 = 9223372036854775807;
-    // Max U is the max value of the unsigned, which is 2^64 - 1.
-    // MAX_U has all its bits 1.
+    /// Max U is the max value of the unsigned, which is 2^64 - 1.
+    /// MAX_U has all its bits 1.
     const MAX_U: u64 = 18446744073709551615;
 
-    // swap_half shifts the value of negative numbers to lower half of the total range,
-    // and non negative numbers to the upper half of the total range - this is essentially
-    // x + BREAK_POINT.
+    /// swap_half shifts the value of negative numbers to lower half of the total range,
+    /// and non negative numbers to the upper half of the total range - this is essentially
+    /// x + BREAK_POINT.
     fun swap_half(x: Int64): u64 {
         // Flip the sign bit - that's it.
         x.value^BREAK_POINT
     }
 
-    // new creates a Int64.
+    /// new creates a Int64.
     public fun new(absolute_value: u64, negative: bool): Int64 {
         assert!((negative && absolute_value <= BREAK_POINT) || (!negative && absolute_value < BREAK_POINT), E_OUT_OF_RANGE);
         if (!negative || absolute_value == 0) {
@@ -287,7 +305,7 @@ module more_math::int64 {
         }
     }
 
-    // is_negative checks if x is negative.
+    /// is_negative checks if x is negative.
     public fun is_negative(x: Int64): bool {
         x.value >= BREAK_POINT
     }
@@ -296,7 +314,7 @@ module more_math::int64 {
         x.value == 0
     }
 
-    // negative returns -x.
+    /// negative returns -x.
     public fun negative(x: Int64): Int64 {
         assert!(x.value != BREAK_POINT, E_OUT_OF_RANGE);
 
@@ -309,7 +327,7 @@ module more_math::int64 {
         }
     }
 
-    // abs returns the absolute value of x (as the unsigned underlying u64)
+    /// abs returns the absolute value of x (as the unsigned underlying u64)
     public fun abs(x: Int64): u64 {
         if (!is_negative(x)) {
             x.value
@@ -318,29 +336,29 @@ module more_math::int64 {
         }
     }
 
-    // zero obtains the zero value of the type.
+    /// zero obtains the zero value of the type.
     public fun zero(): Int64 {
         Int64 {
             value: 0
         }
     }
 
-    // equal checks if x == y
+    /// equal checks if x == y
     public fun equal(x: Int64, y: Int64): bool {
         x.value == y.value
     }
 
-    // greater checks if x > y
+    /// greater checks if x > y
     public fun greater(x: Int64, y:Int64): bool {
         swap_half(x) > swap_half(y)
     }
 
-    // less checks if x < y
+    /// less checks if x < y
     public fun less(x: Int64, y: Int64): bool {
         swap_half(x) < swap_half(y)
     }
 
-    // add x and y, abort if overflow
+    /// add x and y, abort if overflow
     public fun add(x: Int64, y: Int64): Int64 {
         // get the lower bits of x, and y, and the sign bits.
         let xl = x.value & MAX_POSITIVE;
@@ -361,7 +379,7 @@ module more_math::int64 {
         }
     }
 
-    // subtract y from x, abort if overflows
+    /// subtract y from x, abort if overflows
     public fun subtract(x: Int64, y: Int64): Int64 {
         // y is the smallest value of negative
         // x must be at most -1
@@ -377,7 +395,7 @@ module more_math::int64 {
         }
     }
 
-    // multiply x and y, abort if overflows
+    /// multiply x and y, abort if overflows
     public fun multiply(x: Int64, y: Int64): Int64 {
         let xv = abs(x);
         let yv = abs(y);
@@ -389,7 +407,7 @@ module more_math::int64 {
         }
     }
 
-    // divide x with y, abort if y is 0
+    /// divide x with y, abort if y is 0
     public fun divide(x: Int64, y: Int64): Int64 {
         let xv = abs(x);
         let yv = abs(y);
@@ -401,33 +419,51 @@ module more_math::int64 {
         }
     }
 
-    // mod remainder of the integer division (x - y*(x/y))
+    /// mod remainder of the integer division (x - y*(x/y))
     public fun mod(x: Int64, y: Int64): Int64 {
         subtract(x, multiply(y, divide(x, y)))
     }
 
-    // raw value
+    /// raw value returns the underlying unsigned integer u64
     public fun raw_value(x: Int64): u64 {
         x.value
     }
 
+    /// bitwise and 
     public fun bitwise_and(x: Int64, y: Int64): Int64 {
         Int64 {
             value: x.value & y.value,
         }
     }
 
+    /// bitwise or
     public fun bitwise_or(x: Int64, y: Int64): Int64 {
         Int64 {
             value: x.value | y.value,
         }
     }
 
+    /// bitwise xor
     public fun bitwise_xor(x: Int64, y: Int64): Int64 {
         Int64 {
             value: x.value ^ y.value,
         }
     }
+
+    /// left shift the integer
+    public fun lsh(x: Int64, n: u8): Int64 {
+        Int64 {
+            value: (x.value << n),
+        }
+    }
+
+    /// right shift the integer
+    public fun rsh(x: Int64, n: u8): Int64 {
+        Int64 {
+            value: (x.value >> n),
+        }
+    }
+    
 
 
     #[test]
@@ -486,36 +522,36 @@ module more_math::int64 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: -t
-// Version: v1.2.7
+// Version: v1.3.0
 module more_math::int128 {
-    // Int128 defines a signed integer with 128 bit width from u128.
-    // Negative numbers are represented by two's complements.
+    /// Int128 defines a signed integer with 128 bit width from u128.
+    /// Negative numbers are represented by two's complements.
     struct Int128 has store, copy, drop {
         value: u128,
     }
 
     const E_OUT_OF_RANGE: u64 = 1001;
 
-    // BREAK_POINT is the value of 2^(128-1), where positive and negative breaks.
-    // It is the minimal value of the negative value -2^(128-1).
-    // BREAK_POINT has the sign bit 1, and all lower bits 0.
+    /// BREAK_POINT is the value of 2^(128-1), where positive and negative breaks.
+    /// It is the minimal value of the negative value -2^(128-1).
+    /// BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: u128 = 170141183460469231731687303715884105728;
-    // Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
-    // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
+    /// Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    /// MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: u128 = 170141183460469231731687303715884105727;
-    // Max U is the max value of the unsigned, which is 2^128 - 1.
-    // MAX_U has all its bits 1.
+    /// Max U is the max value of the unsigned, which is 2^128 - 1.
+    /// MAX_U has all its bits 1.
     const MAX_U: u128 = 340282366920938463463374607431768211455;
 
-    // swap_half shifts the value of negative numbers to lower half of the total range,
-    // and non negative numbers to the upper half of the total range - this is essentially
-    // x + BREAK_POINT.
+    /// swap_half shifts the value of negative numbers to lower half of the total range,
+    /// and non negative numbers to the upper half of the total range - this is essentially
+    /// x + BREAK_POINT.
     fun swap_half(x: Int128): u128 {
         // Flip the sign bit - that's it.
         x.value^BREAK_POINT
     }
 
-    // new creates a Int128.
+    /// new creates a Int128.
     public fun new(absolute_value: u128, negative: bool): Int128 {
         assert!((negative && absolute_value <= BREAK_POINT) || (!negative && absolute_value < BREAK_POINT), E_OUT_OF_RANGE);
         if (!negative || absolute_value == 0) {
@@ -529,7 +565,7 @@ module more_math::int128 {
         }
     }
 
-    // is_negative checks if x is negative.
+    /// is_negative checks if x is negative.
     public fun is_negative(x: Int128): bool {
         x.value >= BREAK_POINT
     }
@@ -538,7 +574,7 @@ module more_math::int128 {
         x.value == 0
     }
 
-    // negative returns -x.
+    /// negative returns -x.
     public fun negative(x: Int128): Int128 {
         assert!(x.value != BREAK_POINT, E_OUT_OF_RANGE);
 
@@ -551,7 +587,7 @@ module more_math::int128 {
         }
     }
 
-    // abs returns the absolute value of x (as the unsigned underlying u128)
+    /// abs returns the absolute value of x (as the unsigned underlying u128)
     public fun abs(x: Int128): u128 {
         if (!is_negative(x)) {
             x.value
@@ -560,29 +596,29 @@ module more_math::int128 {
         }
     }
 
-    // zero obtains the zero value of the type.
+    /// zero obtains the zero value of the type.
     public fun zero(): Int128 {
         Int128 {
             value: 0
         }
     }
 
-    // equal checks if x == y
+    /// equal checks if x == y
     public fun equal(x: Int128, y: Int128): bool {
         x.value == y.value
     }
 
-    // greater checks if x > y
+    /// greater checks if x > y
     public fun greater(x: Int128, y:Int128): bool {
         swap_half(x) > swap_half(y)
     }
 
-    // less checks if x < y
+    /// less checks if x < y
     public fun less(x: Int128, y: Int128): bool {
         swap_half(x) < swap_half(y)
     }
 
-    // add x and y, abort if overflow
+    /// add x and y, abort if overflow
     public fun add(x: Int128, y: Int128): Int128 {
         // get the lower bits of x, and y, and the sign bits.
         let xl = x.value & MAX_POSITIVE;
@@ -603,7 +639,7 @@ module more_math::int128 {
         }
     }
 
-    // subtract y from x, abort if overflows
+    /// subtract y from x, abort if overflows
     public fun subtract(x: Int128, y: Int128): Int128 {
         // y is the smallest value of negative
         // x must be at most -1
@@ -619,7 +655,7 @@ module more_math::int128 {
         }
     }
 
-    // multiply x and y, abort if overflows
+    /// multiply x and y, abort if overflows
     public fun multiply(x: Int128, y: Int128): Int128 {
         let xv = abs(x);
         let yv = abs(y);
@@ -631,7 +667,7 @@ module more_math::int128 {
         }
     }
 
-    // divide x with y, abort if y is 0
+    /// divide x with y, abort if y is 0
     public fun divide(x: Int128, y: Int128): Int128 {
         let xv = abs(x);
         let yv = abs(y);
@@ -643,33 +679,51 @@ module more_math::int128 {
         }
     }
 
-    // mod remainder of the integer division (x - y*(x/y))
+    /// mod remainder of the integer division (x - y*(x/y))
     public fun mod(x: Int128, y: Int128): Int128 {
         subtract(x, multiply(y, divide(x, y)))
     }
 
-    // raw value
+    /// raw value returns the underlying unsigned integer u128
     public fun raw_value(x: Int128): u128 {
         x.value
     }
 
+    /// bitwise and 
     public fun bitwise_and(x: Int128, y: Int128): Int128 {
         Int128 {
             value: x.value & y.value,
         }
     }
 
+    /// bitwise or
     public fun bitwise_or(x: Int128, y: Int128): Int128 {
         Int128 {
             value: x.value | y.value,
         }
     }
 
+    /// bitwise xor
     public fun bitwise_xor(x: Int128, y: Int128): Int128 {
         Int128 {
             value: x.value ^ y.value,
         }
     }
+
+    /// left shift the integer
+    public fun lsh(x: Int128, n: u8): Int128 {
+        Int128 {
+            value: (x.value << n),
+        }
+    }
+
+    /// right shift the integer
+    public fun rsh(x: Int128, n: u8): Int128 {
+        Int128 {
+            value: (x.value >> n),
+        }
+    }
+    
 
 
     #[test]

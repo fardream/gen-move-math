@@ -4,34 +4,34 @@
 // Arguments: {{.Args}}
 // Version: {{.Version}}
 module {{ .Address }}::{{ .ModuleName }} {
-    // {{ .TypeName }} defines a signed integer with {{ .BaseWidth }} bit width from {{ .BaseTypeName }}.
-    // Negative numbers are represented by two's complements.
+    /// {{ .TypeName }} defines a signed integer with {{ .BaseWidth }} bit width from {{ .BaseTypeName }}.
+    /// Negative numbers are represented by two's complements.
     struct {{ .TypeName }} has store, copy, drop {
         value: {{ .BaseTypeName }},
     }
 
     const E_OUT_OF_RANGE: u64 = 1001;
 
-    // BREAK_POINT is the value of 2^({{ .BaseWidth }}-1), where positive and negative breaks.
-    // It is the minimal value of the negative value -2^({{ .BaseWidth }}-1).
-    // BREAK_POINT has the sign bit 1, and all lower bits 0.
+    /// BREAK_POINT is the value of 2^({{ .BaseWidth }}-1), where positive and negative breaks.
+    /// It is the minimal value of the negative value -2^({{ .BaseWidth }}-1).
+    /// BREAK_POINT has the sign bit 1, and all lower bits 0.
     const BREAK_POINT: {{ .BaseTypeName }} = {{ .BreakPoint }};
-    // Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
-    // MAX_POSITIVE has the sign bit 0, and all lower bits 1.
+    /// Max Positive, this is BREAK_POINT-1, and the max value for the positive numbers.
+    /// MAX_POSITIVE has the sign bit 0, and all lower bits 1.
     const MAX_POSITIVE: {{ .BaseTypeName }} = {{ .MaxPositive }};
-    // Max U is the max value of the unsigned, which is 2^{{ .BaseWidth }} - 1.
-    // MAX_U has all its bits 1.
+    /// Max U is the max value of the unsigned, which is 2^{{ .BaseWidth }} - 1.
+    /// MAX_U has all its bits 1.
     const MAX_U: {{ .BaseTypeName }} = {{ .MaxUnsigned }};
 
-    // swap_half shifts the value of negative numbers to lower half of the total range,
-    // and non negative numbers to the upper half of the total range - this is essentially
-    // x + BREAK_POINT.
+    /// swap_half shifts the value of negative numbers to lower half of the total range,
+    /// and non negative numbers to the upper half of the total range - this is essentially
+    /// x + BREAK_POINT.
     fun swap_half(x: {{ .TypeName }}): {{ .BaseTypeName }} {
         // Flip the sign bit - that's it.
         x.value^BREAK_POINT
     }
 
-    // new creates a {{ .TypeName }}.
+    /// new creates a {{ .TypeName }}.
     public fun new(absolute_value: {{ .BaseTypeName }}, negative: bool): {{ .TypeName }} {
         assert!((negative && absolute_value <= BREAK_POINT) || (!negative && absolute_value < BREAK_POINT), E_OUT_OF_RANGE);
         if (!negative || absolute_value == 0) {
@@ -45,7 +45,7 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
-    // is_negative checks if x is negative.
+    /// is_negative checks if x is negative.
     public fun is_negative(x: {{ .TypeName }}): bool {
         x.value >= BREAK_POINT
     }
@@ -54,7 +54,7 @@ module {{ .Address }}::{{ .ModuleName }} {
         x.value == 0
     }
 
-    // negative returns -x.
+    /// negative returns -x.
     public fun negative(x: {{ .TypeName }}): {{ .TypeName }} {
         assert!(x.value != BREAK_POINT, E_OUT_OF_RANGE);
 
@@ -67,7 +67,7 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
-    // abs returns the absolute value of x (as the unsigned underlying {{.BaseTypeName}})
+    /// abs returns the absolute value of x (as the unsigned underlying {{.BaseTypeName}})
     public fun abs(x: {{ .TypeName }}): {{ .BaseTypeName }} {
         if (!is_negative(x)) {
             x.value
@@ -76,29 +76,29 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
-    // zero obtains the zero value of the type.
+    /// zero obtains the zero value of the type.
     public fun zero(): {{ .TypeName }} {
         {{ .TypeName }} {
             value: 0
         }
     }
 
-    // equal checks if x == y
+    /// equal checks if x == y
     public fun equal(x: {{ .TypeName }}, y: {{ .TypeName }}): bool {
         x.value == y.value
     }
 
-    // greater checks if x > y
+    /// greater checks if x > y
     public fun greater(x: {{ .TypeName }}, y:{{ .TypeName }}): bool {
         swap_half(x) > swap_half(y)
     }
 
-    // less checks if x < y
+    /// less checks if x < y
     public fun less(x: {{ .TypeName }}, y: {{ .TypeName }}): bool {
         swap_half(x) < swap_half(y)
     }
 
-    // add x and y, abort if overflow
+    /// add x and y, abort if overflow
     public fun add(x: {{ .TypeName }}, y: {{ .TypeName }}): {{ .TypeName }} {
         // get the lower bits of x, and y, and the sign bits.
         let xl = x.value & MAX_POSITIVE;
@@ -119,7 +119,7 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
-    // subtract y from x, abort if overflows
+    /// subtract y from x, abort if overflows
     public fun subtract(x: {{ .TypeName }}, y: {{ .TypeName }}): {{ .TypeName }} {
         // y is the smallest value of negative
         // x must be at most -1
@@ -135,7 +135,7 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
-    // multiply x and y, abort if overflows
+    /// multiply x and y, abort if overflows
     public fun multiply(x: {{ .TypeName }}, y: {{ .TypeName }}): {{ .TypeName }} {
         let xv = abs(x);
         let yv = abs(y);
@@ -147,7 +147,7 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
-    // divide x with y, abort if y is 0
+    /// divide x with y, abort if y is 0
     public fun divide(x: {{ .TypeName }}, y: {{ .TypeName }}): {{ .TypeName }} {
         let xv = abs(x);
         let yv = abs(y);
@@ -159,33 +159,51 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
-    // mod remainder of the integer division (x - y*(x/y))
+    /// mod remainder of the integer division (x - y*(x/y))
     public fun mod(x: {{ .TypeName }}, y: {{ .TypeName }}): {{ .TypeName }} {
         subtract(x, multiply(y, divide(x, y)))
     }
 
-    // raw value
+    /// raw value returns the underlying unsigned integer {{.BaseTypeName}}
     public fun raw_value(x: {{.TypeName}}): {{.BaseTypeName}} {
         x.value
     }
 
+    /// bitwise and 
     public fun bitwise_and(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         {{.TypeName}} {
             value: x.value & y.value,
         }
     }
 
+    /// bitwise or
     public fun bitwise_or(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         {{.TypeName}} {
             value: x.value | y.value,
         }
     }
 
+    /// bitwise xor
     public fun bitwise_xor(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         {{.TypeName}} {
             value: x.value ^ y.value,
         }
     }
+
+    /// left shift the integer
+    public fun lsh(x: {{.TypeName}}, n: u8): {{.TypeName}} {
+        {{.TypeName}} {
+            value: (x.value << n),
+        }
+    }
+
+    /// right shift the integer
+    public fun rsh(x: {{.TypeName}}, n: u8): {{.TypeName}} {
+        {{.TypeName}} {
+            value: (x.value >> n),
+        }
+    }
+    
 {{if .DoTest}}
 
     #[test]

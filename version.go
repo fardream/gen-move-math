@@ -10,5 +10,5 @@ var version string = func() string {
 			}
 		}
 	}
-	return "v1.2.7"
+	return "v1.3.0"
 }()
