@@ -347,11 +347,29 @@ module {{.Address}}::{{.ModuleName}} {
 
         x.lo
     }
+
+    /// sqrt returns y = floor(sqrt(x))
+    public fun sqrt(x: {{.TypeName}}): {{.TypeName}} {
+        if (x.hi == 0 && x.lo == 0) {
+            {{.TypeName}} { hi: 0, lo: 0}
+        } else if (x.hi == 0 && x.lo <= 3) {
+            {{.TypeName}} { hi: 0, lo: 1}
+        } else {
+            let n = (255 - leading_zeros(x)) >> 1;
+            let z = rsh(x, n);
+            let z_next = rsh(add(z, divide(x, z)), 1);
+            while (less(z_next, z)) {
+                z = z_next;
+                z_next = rsh(add(z, divide(x, z)), 1);
+            };
+            z
+        }
+    }
 {{if .DoTest}}
 
     const E_WRONG_RESULT: u64 = 1001;
     #[test]
-    fun test_uint16() {
+    fun test_uint{{.DesiredWidth}}() {
         let (r, carry) = underlying_add_with_carry(252, 9);
         assert!(r == 5, E_WRONG_RESULT);
         assert!(carry == 1, E_WRONG_RESULT);

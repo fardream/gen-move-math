@@ -4,6 +4,10 @@ import (
 	_ "embed"
 	"fmt"
 	"math/big"
+	"os"
+	"strings"
+
+	"github.com/spf13/cobra"
 )
 
 //go:embed signed_math.move.template
@@ -68,4 +72,46 @@ func newSignedMathGenerated(s *signedMath) *signedMathGenerated {
 
 func (s signedMathGenerated) GenText() (string, error) {
 	return GenText(s.ModuleName, signed_math_template, s)
+}
+
+func newSignedMathCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "signed-math",
+		Short: "",
+		Args:  cobra.NoArgs,
+	}
+
+	output := "./sources/signed_math.move"
+	address := "more_math"
+	widths := newIntWidth([]uint{8, 16, 32, 64, 128, 256})
+	doTest := false
+
+	cmd.Flags().StringVarP(&output, "out", "o", output, "output file. this should be the in the sources folder of your move package module")
+	cmd.MarkFlagFilename("out")
+	cmd.Flags().StringVarP(&address, "address", "p", address, "(named) address")
+	cmd.Flags().VarP(widths, "width", "w", fmt.Sprintf("int widths, must be one of %s. can be specified multiple times.", sliceToString(widths.permitted)))
+	cmd.Flags().BoolVarP(&doTest, "do-test", "t", false, "generate test code")
+
+	cmd.Run = func(cmd *cobra.Command, args []string) {
+		allTexts := []string{}
+		for _, w := range widths.values {
+			s := signedMath{
+				BaseWidth: w,
+				Address:   address,
+				DoTest:    doTest,
+				Args:      strings.Join(os.Args[1:], " "),
+				Version:   version,
+			}
+
+			code, err := newSignedMathGenerated(&s).GenText()
+			if err != nil {
+				panic(err)
+			}
+			allTexts = append(allTexts, code)
+		}
+
+		os.WriteFile(output, []byte(strings.Join(allTexts, "\n")), 0o666)
+	}
+
+	return cmd
 }

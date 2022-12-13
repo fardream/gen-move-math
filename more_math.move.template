@@ -1,0 +1,98 @@
+{{$typename := .UintTypeName}}// Auto generated from gen-move-math
+// https://github.com/fardream/gen-move-math
+// Manual edit with caution.
+// Arguments: {{.Args}}
+// Version: {{.Version}}
+module {{.Address}}::{{.ModuleName}} {
+    const E_WIDTH_OVERFLOW_U8: u64 = 1;
+    const HALF_SIZE: u8 = {{.HalfWidth}};
+    const MAX_SHIFT_SIZE: u8 = {{.MaxShiftSize}};
+
+    const ALL_ONES: {{$typename}} = {{.AllOnes}};
+    const LOWER_ONES: {{$typename}} = (1 << {{.HalfWidth}}) - 1;
+    const UPPER_ONES: {{$typename}} = ((1 << {{.HalfWidth}}) - 1) << {{.HalfWidth}};
+    /// add two {{$typename}} with carry - will never abort.
+    /// First return value is the value of the result, the second return value indicate if carry happens.
+    public fun add_with_carry(x: {{$typename}}, y: {{$typename}}):({{$typename}}, {{$typename}}) {
+        let r = ALL_ONES - x;
+        if (r < y) {
+            (y - r - 1, 1)
+        } else {
+            (x + y, 0)
+        }
+    }
+
+    /// subtract y from x with borrow - will never abort.
+    /// First return value is the value of the result, the second return value indicate if borrow happens.
+    public fun sub_with_borrow(x: {{$typename}}, y:{{$typename}}): ({{$typename}}, {{$typename}}) {
+        if (x < y) {
+            ((ALL_ONES - y) + 1 + x, 1)
+        } else {
+            (x-y, 0)
+        }
+    }
+
+    /// x * y, first return value is the lower part of the result, second return value is the upper part of the result.
+    public fun mul_with_carry(x: {{$typename}}, y: {{$typename}}):({{$typename}}, {{$typename}}) {
+        // split x and y into lower part and upper part.
+        // xh, xl, yh, yl
+        // result is
+        // upper = xh * xl + (xh * yl) >> half_size + (xl * yh) >> half_size
+        // lower = xl * yl + (xh * yl) << half_size + (xl * yh) << half_size
+        let xh = (x & UPPER_ONES) >> HALF_SIZE;
+        let xl = x & LOWER_ONES;
+        let yh = (y & UPPER_ONES) >> HALF_SIZE;
+        let yl = y & LOWER_ONES;
+        let xhyl = xh * yl;
+        let xlyh = xl * yh;
+
+        let (lo, lo_carry_1) = add_with_carry(xl * yl, (xhyl & LOWER_ONES) << HALF_SIZE);
+        let (lo, lo_carry_2) = add_with_carry(lo, (xlyh & LOWER_ONES)<< HALF_SIZE);
+        let hi = xh * yh + (xhyl >> HALF_SIZE) + (xlyh >> HALF_SIZE) + lo_carry_1 + lo_carry_2;
+
+        (lo, hi)
+    }
+
+    /// count leading zeros {{$typename}}
+    public fun leading_zeros(x: {{$typename}}): u8 {
+        if (x == 0) {
+{{if eq .UintWidth 256}}            abort(E_WIDTH_OVERFLOW_U8)
+{{else}}            {{.UintWidth}}
+{{end}}        } else {
+            let n: u8 = 0;
+{{$base_type := .UintTypeName}}{{range .UnrolledForLeadingZeros}}            if (x & {{.Ones}} == 0) {
+                {{if ne .Width 1}}// x's higher {{.Width}} is all zero, shift the lower part over
+                x = x << {{.Width}};
+                {{end}}n = n + {{.Width}};
+            };
+{{end}}
+            n
+        }
+    }
+
+    /// sqrt returns y = floor(sqrt(x))
+    public fun sqrt(x: {{$typename}}): {{$typename}} {
+        if (x == 0) {
+            0
+        } else if (x <= 3) {
+            1
+        } else {
+            // reproduced from golang's big.Int.Sqrt
+            let n = (MAX_SHIFT_SIZE - leading_zeros(x)) >> 1;
+            let z = x >> ((n - 1) / 2);
+            let z_next = (z + x / z) >> 1;
+            while (z_next < z) {
+                z = z_next;
+                z_next = (z + x / z) >> 1;
+            };
+            z
+        }
+    }
+{{if .DoTest}}
+
+{{range $i, $t := .SqrtTestCases}}    #[test]
+    fun test_sqrt_{{$typename}}_{{$i}}() {
+        let r = sqrt({{.Squared}});
+        assert!(r == {{.Root}}, (r as u64));
+    }
+{{end}}{{end}}}

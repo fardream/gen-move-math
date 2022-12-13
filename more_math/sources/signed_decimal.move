@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-decimal -t
-// Version: v1.3.0
+// Version: v1.4.0
 module more_math::signed_decimal128_p12 {
     use more_math::uint256;
     use more_math::int128::{Self, Int128};
@@ -269,7 +269,7 @@ module more_math::signed_decimal128_p12 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-decimal -t
-// Version: v1.3.0
+// Version: v1.4.0
 module more_math::signed_decimal128_p14 {
     use more_math::uint256;
     use more_math::int128::{Self, Int128};
@@ -536,7 +536,7 @@ module more_math::signed_decimal128_p14 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-decimal -t
-// Version: v1.3.0
+// Version: v1.4.0
 module more_math::signed_decimal128_p16 {
     use more_math::uint256;
     use more_math::int128::{Self, Int128};
@@ -803,7 +803,7 @@ module more_math::signed_decimal128_p16 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-decimal -t
-// Version: v1.3.0
+// Version: v1.4.0
 module more_math::signed_decimal128_p18 {
     use more_math::uint256;
     use more_math::int128::{Self, Int128};
