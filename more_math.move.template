@@ -5,6 +5,9 @@
 // Version: {{.Version}}
 module {{.Address}}::{{.ModuleName}} {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
+    const E_LOG_2_OUT_OF_RANGE: u64 = 2;
+    const E_ZERO_FOR_LOG_2: u64 = 3;
+
     const HALF_SIZE: u8 = {{.HalfWidth}};
     const MAX_SHIFT_SIZE: u8 = {{.MaxShiftSize}};
 
@@ -87,6 +90,42 @@ module {{.Address}}::{{.ModuleName}} {
             };
             z
         }
+    }
+
+    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
+    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    public fun log_2(x: {{$typename}}, n: u8): {{$typename}} {
+        assert!(x != 0, E_ZERO_FOR_LOG_2);
+
+        let one: {{$typename}} = 1 << n;
+        let two: {{$typename}} = one << 1;
+
+        assert!(x >= one && x < two, E_LOG_2_OUT_OF_RANGE);
+
+        let z_2 = x;
+        let r: {{$typename}} = 0;
+        let sum_m: u8 = 0;
+
+        loop {
+            if (z_2 == one) {
+                break
+            };
+            let z = (z_2 * z_2) >> n;
+            sum_m = sum_m + 1;
+            if (sum_m > n) {
+                break
+            };
+            if (z >= two) {
+                r = r + (one >> sum_m);
+                z_2 = z >> 1;
+            } else {
+                z_2 = z;
+            };
+        };
+
+        r
     }
 {{if .DoTest}}
 
