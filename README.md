@@ -1,44 +1,42 @@
 # gen-move-math and more_math
 
-`gen-move-math` is a command line to generate missing functionalities for [move](https://github.com/move-language/move), and `more_math` is the code generated with default options.
+`gen-move-math` is a cli to generate missing functionalities for [move](https://github.com/move-language/move), and `more_math` is the code generated with default options.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/fardream/gen-move-math.svg)](https://pkg.go.dev/github.com/fardream/gen-move-math)
 
 [**Movey Link**](https://www.movey.net/packages/more_math)
 
-Following are currently provided:
+Following types are currently provided:
 
 - signed integer.
 - double width unsigned integer (u256 and u16).
 - decimal.
 - signed decimal.
 
-## Use as a move package
+Also provided some math functions for move's native unsigned integers:
 
-The generated code with default options is provided in folder [more_math](./more_math), and can be included in any move package by
-
-```
-[dependencies]
-more_math = { git = "https://github.com/fardream/gen-move-math.git", rev = "master", subdir = "more_math"}
-
-[addresses]
-more_math = "0x5" // set this here or in the command line.
-```
+- addition with carry (never overflow or abort)
+- subtract with borrow (never underflow or abort)
+- multiplication with carry (never overflow or abort)
+- counting leading zeros
+- square root function calculating (y = floor(sqrt(x)))
+- log 2 calculating log_2 x
 
 ## Install/Use Code Generator
 
-Since the code is not published on chain yet, and another way to include the code in your move code is to generate the code from the command line into your own package.
+To include the code in your move code, generate the code from the command line into your own package.
 
 Please install [go](https://go.dev). After installation, simply run the below
 
 ```shell
 go install github.com/fardream/gen-move-math@latest
+gen-move-math # other options
 ```
 
 Or without downloading
 
 ```shell
-go run github.com/fardream/gen-move-math@latest
+go run github.com/fardream/gen-move-math@latest # other options
 ```
 
 See [example-use.MD](./example-use.MD) for a detailed instruction.
@@ -148,3 +146,15 @@ Fixed decimals are quite straightforward, only two note:
 
 - need to use double size integers to avoid overflow
 - need to multiply the numerator by 10^decimal before performing the division.
+
+## Square Root
+
+The method is produced from golang's [`Sqrt`](https://pkg.go.dev/math/big#Int.Sqrt) function for `big.Int`. The method is iterative:
+
+$$
+y = (x + x / y) / 2
+$$
+
+## Log 2
+
+Binary Logarithm algo is based on the method laid out [here](https://en.wikipedia.org/wiki/Binary_logarithm).

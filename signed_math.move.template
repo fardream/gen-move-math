@@ -135,6 +135,15 @@ module {{ .Address }}::{{ .ModuleName }} {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: {{.BaseTypeName}}, y: {{.BaseTypeName}}): {{.TypeName}} {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: {{ .TypeName }}, y: {{ .TypeName }}): {{ .TypeName }} {
         let xv = abs(x);
@@ -169,7 +178,7 @@ module {{ .Address }}::{{ .ModuleName }} {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: {{.TypeName}}, y: {{.TypeName}}): {{.TypeName}} {
         {{.TypeName}} {
             value: x.value & y.value,
