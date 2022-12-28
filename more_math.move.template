@@ -127,6 +127,43 @@ module {{.Address}}::{{.ModuleName}} {
 
         r
     }
+
+    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2). Instead of looking for same precision as
+    // n, the precision is controlled by another parameter precision. Calculation will stop once 2^precision is reached.
+    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    public fun log_2_with_precision(x: {{$typename}}, n: u8, precision: u8): {{$typename}} {
+        assert!(x != 0, E_ZERO_FOR_LOG_2);
+
+        let one: {{$typename}} = 1 << n;
+        let two: {{$typename}} = one << 1;
+
+        assert!(x >= one && x < two, E_LOG_2_OUT_OF_RANGE);
+
+        let z_2 = x;
+        let r: {{$typename}} = 0;
+        let sum_m: u8 = 0;
+
+        loop {
+            if (z_2 == one) {
+                break
+            };
+            let z = (z_2 * z_2) >> n;
+            sum_m = sum_m + 1;
+            if (sum_m > precision) {
+                break
+            };
+            if (z >= two) {
+                r = r + (one >> sum_m);
+                z_2 = z >> 1;
+            } else {
+                z_2 = z;
+            };
+        };
+
+        r
+    }
 {{if .DoTest}}
 
 {{range $i, $t := .SqrtTestCases}}    #[test]
