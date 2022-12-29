@@ -92,10 +92,11 @@ module {{.Address}}::{{.ModuleName}} {
         }
     }
 
-    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
-    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
-    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
-    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
+    /// This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    /// into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    /// see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// Also note the last several digits of the result may not be precise.
     public fun log_2(x: {{$typename}}, n: u8): {{$typename}} {
         assert!(x != 0, E_ZERO_FOR_LOG_2);
 
@@ -128,11 +129,11 @@ module {{.Address}}::{{.ModuleName}} {
         r
     }
 
-    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2). Instead of looking for same precision as
-    // n, the precision is controlled by another parameter precision. Calculation will stop once 2^precision is reached.
-    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
-    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
-    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2). Instead of looking for same precision as
+    /// n, the precision is controlled by another parameter precision. Calculation will stop once 2^precision is reached.
+    /// This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    /// into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    /// see: https://en.wikipedia.org/wiki/Binary_logarithm
     public fun log_2_with_precision(x: {{$typename}}, n: u8, precision: u8): {{$typename}} {
         assert!(x != 0, E_ZERO_FOR_LOG_2);
 
@@ -170,5 +171,11 @@ module {{.Address}}::{{.ModuleName}} {
     fun test_sqrt_{{$typename}}_{{$i}}() {
         let r = sqrt({{.Squared}});
         assert!(r == {{.Root}}, (r as u64));
+    }
+{{end}}
+{{range $i, $t := .Log2TestCases}}    #[test]
+    fun test_log_2_{{$typename}}_{{$i}}() {
+        let r = log_2({{.Value}}, {{.N}});
+        assert!(r == {{.Log2}}, (r as u64));
     }
 {{end}}{{end}}}

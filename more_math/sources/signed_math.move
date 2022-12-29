@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -t
-// Version: v1.4.0
+// Version: v1.4.4
 module more_math::int8 {
     /// Int8 defines a signed integer with 8 bit width from u8.
     /// Negative numbers are represented by two's complements.
@@ -135,6 +135,15 @@ module more_math::int8 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u8, y: u8): Int8 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int8, y: Int8): Int8 {
         let xv = abs(x);
@@ -169,7 +178,7 @@ module more_math::int8 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int8, y: Int8): Int8 {
         Int8 {
             value: x.value & y.value,
@@ -261,7 +270,7 @@ module more_math::int8 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -t
-// Version: v1.4.0
+// Version: v1.4.4
 module more_math::int16 {
     /// Int16 defines a signed integer with 16 bit width from u16.
     /// Negative numbers are represented by two's complements.
@@ -394,6 +403,15 @@ module more_math::int16 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u16, y: u16): Int16 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int16, y: Int16): Int16 {
         let xv = abs(x);
@@ -428,7 +446,7 @@ module more_math::int16 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int16, y: Int16): Int16 {
         Int16 {
             value: x.value & y.value,
@@ -520,7 +538,7 @@ module more_math::int16 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -t
-// Version: v1.4.0
+// Version: v1.4.4
 module more_math::int32 {
     /// Int32 defines a signed integer with 32 bit width from u32.
     /// Negative numbers are represented by two's complements.
@@ -653,6 +671,15 @@ module more_math::int32 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u32, y: u32): Int32 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int32, y: Int32): Int32 {
         let xv = abs(x);
@@ -687,7 +714,7 @@ module more_math::int32 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int32, y: Int32): Int32 {
         Int32 {
             value: x.value & y.value,
@@ -779,7 +806,7 @@ module more_math::int32 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -t
-// Version: v1.4.0
+// Version: v1.4.4
 module more_math::int64 {
     /// Int64 defines a signed integer with 64 bit width from u64.
     /// Negative numbers are represented by two's complements.
@@ -912,6 +939,15 @@ module more_math::int64 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u64, y: u64): Int64 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int64, y: Int64): Int64 {
         let xv = abs(x);
@@ -946,7 +982,7 @@ module more_math::int64 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int64, y: Int64): Int64 {
         Int64 {
             value: x.value & y.value,
@@ -1038,7 +1074,7 @@ module more_math::int64 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -t
-// Version: v1.4.0
+// Version: v1.4.4
 module more_math::int128 {
     /// Int128 defines a signed integer with 128 bit width from u128.
     /// Negative numbers are represented by two's complements.
@@ -1171,6 +1207,15 @@ module more_math::int128 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u128, y: u128): Int128 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int128, y: Int128): Int128 {
         let xv = abs(x);
@@ -1205,7 +1250,7 @@ module more_math::int128 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int128, y: Int128): Int128 {
         Int128 {
             value: x.value & y.value,
@@ -1297,7 +1342,7 @@ module more_math::int128 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -t
-// Version: v1.4.0
+// Version: v1.4.4
 module more_math::int256 {
     /// Int256 defines a signed integer with 256 bit width from u256.
     /// Negative numbers are represented by two's complements.
@@ -1430,6 +1475,15 @@ module more_math::int256 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u256, y: u256): Int256 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int256, y: Int256): Int256 {
         let xv = abs(x);
@@ -1464,7 +1518,7 @@ module more_math::int256 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int256, y: Int256): Int256 {
         Int256 {
             value: x.value & y.value,
