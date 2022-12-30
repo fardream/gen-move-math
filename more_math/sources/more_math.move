@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -t
-// Version: v1.4.4
+// Version: v1.4.5
 module more_math::more_math_u8 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -56,7 +56,7 @@ module more_math::more_math_u8 {
         (lo, hi)
     }
 
-    /// count leading zeros u8
+    /// count leading zeros for u8
     public fun leading_zeros(x: u8): u8 {
         if (x == 0) {
             8
@@ -73,6 +73,30 @@ module more_math::more_math_u8 {
                 n = n + 2;
             };
             if (x & 128 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
+    /// count trailing zeros for u8
+    public fun trailing_zeros(x: u8): u8 {
+        if (x == 0) {
+            8
+        } else {
+            let n: u8 = 0;
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
                 n = n + 1;
             };
 
@@ -421,7 +445,7 @@ module more_math::more_math_u8 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -t
-// Version: v1.4.4
+// Version: v1.4.5
 module more_math::more_math_u16 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -475,7 +499,7 @@ module more_math::more_math_u16 {
         (lo, hi)
     }
 
-    /// count leading zeros u16
+    /// count leading zeros for u16
     public fun leading_zeros(x: u16): u8 {
         if (x == 0) {
             16
@@ -497,6 +521,35 @@ module more_math::more_math_u16 {
                 n = n + 2;
             };
             if (x & 32768 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
+    /// count trailing zeros for u16
+    public fun trailing_zeros(x: u16): u8 {
+        if (x == 0) {
+            16
+        } else {
+            let n: u8 = 0;
+            if (x & 255 == 0) {
+                // x's lower 8 is all zero, shift the higher part over
+                x = x >> 8;
+                n = n + 8;
+            };
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
                 n = n + 1;
             };
 
@@ -1085,7 +1138,7 @@ module more_math::more_math_u16 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -t
-// Version: v1.4.4
+// Version: v1.4.5
 module more_math::more_math_u32 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -1139,7 +1192,7 @@ module more_math::more_math_u32 {
         (lo, hi)
     }
 
-    /// count leading zeros u32
+    /// count leading zeros for u32
     public fun leading_zeros(x: u32): u8 {
         if (x == 0) {
             32
@@ -1166,6 +1219,40 @@ module more_math::more_math_u32 {
                 n = n + 2;
             };
             if (x & 2147483648 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
+    /// count trailing zeros for u32
+    public fun trailing_zeros(x: u32): u8 {
+        if (x == 0) {
+            32
+        } else {
+            let n: u8 = 0;
+            if (x & 65535 == 0) {
+                // x's lower 16 is all zero, shift the higher part over
+                x = x >> 16;
+                n = n + 16;
+            };
+            if (x & 255 == 0) {
+                // x's lower 8 is all zero, shift the higher part over
+                x = x >> 8;
+                n = n + 8;
+            };
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
                 n = n + 1;
             };
 
@@ -2234,7 +2321,7 @@ module more_math::more_math_u32 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -t
-// Version: v1.4.4
+// Version: v1.4.5
 module more_math::more_math_u64 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -2288,7 +2375,7 @@ module more_math::more_math_u64 {
         (lo, hi)
     }
 
-    /// count leading zeros u64
+    /// count leading zeros for u64
     public fun leading_zeros(x: u64): u8 {
         if (x == 0) {
             64
@@ -2320,6 +2407,45 @@ module more_math::more_math_u64 {
                 n = n + 2;
             };
             if (x & 9223372036854775808 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
+    /// count trailing zeros for u64
+    public fun trailing_zeros(x: u64): u8 {
+        if (x == 0) {
+            64
+        } else {
+            let n: u8 = 0;
+            if (x & 4294967295 == 0) {
+                // x's lower 32 is all zero, shift the higher part over
+                x = x >> 32;
+                n = n + 32;
+            };
+            if (x & 65535 == 0) {
+                // x's lower 16 is all zero, shift the higher part over
+                x = x >> 16;
+                n = n + 16;
+            };
+            if (x & 255 == 0) {
+                // x's lower 8 is all zero, shift the higher part over
+                x = x >> 8;
+                n = n + 8;
+            };
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
                 n = n + 1;
             };
 
@@ -4348,7 +4474,7 @@ module more_math::more_math_u64 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -t
-// Version: v1.4.4
+// Version: v1.4.5
 module more_math::more_math_u128 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -4402,7 +4528,7 @@ module more_math::more_math_u128 {
         (lo, hi)
     }
 
-    /// count leading zeros u128
+    /// count leading zeros for u128
     public fun leading_zeros(x: u128): u8 {
         if (x == 0) {
             128
@@ -4439,6 +4565,50 @@ module more_math::more_math_u128 {
                 n = n + 2;
             };
             if (x & 170141183460469231731687303715884105728 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
+    /// count trailing zeros for u128
+    public fun trailing_zeros(x: u128): u8 {
+        if (x == 0) {
+            128
+        } else {
+            let n: u8 = 0;
+            if (x & 18446744073709551615 == 0) {
+                // x's lower 64 is all zero, shift the higher part over
+                x = x >> 64;
+                n = n + 64;
+            };
+            if (x & 4294967295 == 0) {
+                // x's lower 32 is all zero, shift the higher part over
+                x = x >> 32;
+                n = n + 32;
+            };
+            if (x & 65535 == 0) {
+                // x's lower 16 is all zero, shift the higher part over
+                x = x >> 16;
+                n = n + 16;
+            };
+            if (x & 255 == 0) {
+                // x's lower 8 is all zero, shift the higher part over
+                x = x >> 8;
+                n = n + 8;
+            };
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
                 n = n + 1;
             };
 
@@ -8387,7 +8557,7 @@ module more_math::more_math_u128 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -t
-// Version: v1.4.4
+// Version: v1.4.5
 module more_math::more_math_u256 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -8441,7 +8611,7 @@ module more_math::more_math_u256 {
         (lo, hi)
     }
 
-    /// count leading zeros u256
+    /// count leading zeros for u256
     public fun leading_zeros(x: u256): u8 {
         if (x == 0) {
             abort(E_WIDTH_OVERFLOW_U8)
@@ -8483,6 +8653,55 @@ module more_math::more_math_u256 {
                 n = n + 2;
             };
             if (x & 57896044618658097711785492504343953926634992332820282019728792003956564819968 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
+    /// count trailing zeros for u256
+    public fun trailing_zeros(x: u256): u8 {
+        if (x == 0) {
+            abort(E_WIDTH_OVERFLOW_U8)
+        } else {
+            let n: u8 = 0;
+            if (x & 340282366920938463463374607431768211455 == 0) {
+                // x's lower 128 is all zero, shift the higher part over
+                x = x >> 128;
+                n = n + 128;
+            };
+            if (x & 18446744073709551615 == 0) {
+                // x's lower 64 is all zero, shift the higher part over
+                x = x >> 64;
+                n = n + 64;
+            };
+            if (x & 4294967295 == 0) {
+                // x's lower 32 is all zero, shift the higher part over
+                x = x >> 32;
+                n = n + 32;
+            };
+            if (x & 65535 == 0) {
+                // x's lower 16 is all zero, shift the higher part over
+                x = x >> 16;
+                n = n + 16;
+            };
+            if (x & 255 == 0) {
+                // x's lower 8 is all zero, shift the higher part over
+                x = x >> 8;
+                n = n + 8;
+            };
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
                 n = n + 1;
             };
 

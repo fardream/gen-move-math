@@ -46,13 +46,16 @@ type unrolledUpper struct {
 	Width uint
 	// Ones is Width ones together.
 	Ones string
+	// Trailing Ones
+	TrailingOnes string
 }
 
 // newUnrolledUpper creates an unrolled
 func newUnrolledUpper(n uint, w uint) unrolledUpper {
 	return unrolledUpper{
-		Width: n,
-		Ones:  big.NewInt(0).Lsh(big.NewInt(0).Sub(big.NewInt(0).Lsh(one, n), one), w-n).String(),
+		Width:        n,
+		Ones:         big.NewInt(0).Lsh(big.NewInt(0).Sub(big.NewInt(0).Lsh(one, n), one), w-n).String(),
+		TrailingOnes: big.NewInt(0).Sub(big.NewInt(0).Lsh(one, n), one).String(),
 	}
 }
 
